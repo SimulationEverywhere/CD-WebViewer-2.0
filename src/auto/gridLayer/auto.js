@@ -6,7 +6,7 @@ import Dom from '../../utils/dom.js';
 import Tooltip from '../../ui/tooltip.js';
 import Grid from './grid.js';
 import Automated from '../automated.js';
-import Recorder from '../../components/wtf.js';
+import Recorder from '../../components/record.js';
 
 export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated { 
 
