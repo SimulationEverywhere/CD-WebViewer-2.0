@@ -10,6 +10,8 @@ const DEFAULT_COLOR = "#fff";
 
 export default Lang.Templatable("Grid.Grid", class Grid extends Widget { 
 
+	get Canvas() { return this.Node("canvas"); }
+	
 	constructor() {
 		super();
 

@@ -17,9 +17,6 @@ export default class SimulationInfo {
 	get NFrames() { return this.nFrames; }
 	set NFrames(value) { this.nFrames = value; }
 	
-	get NTransitions() { return this.nTransitions; }
-	set NTransitions(value) { this.nTransitions = value; }
-	
 	get LastFrame() { return this.lastFrame; }
 	set LastFrame(value) { this.lastFrame = value; }
 
@@ -29,21 +26,17 @@ export default class SimulationInfo {
 		this.size = { x:0, y:0 };
 		this.simulator = null;
 		this.nFrames = null;
-		this.nTransitions = null;
 		this.lastFrame = null;
 	}
 	
-	Load(simulation, messages, parser) {
+	Load(simulation, parser) {
 		this.Simulator = parser.Type;
 		this.Name = parser.ModelName;
 		this.Files = parser.FileNames;
 		this.LastFrame = simulation.LastFrame().id;
 		this.NFrames = simulation.frames.length;
-		this.NTransitions = messages.length;
 		
-		var t = simulation.FirstFrame().Last();
-		
-		this.Size = { x:t.X + 1, y:t.Y + 1, z:t.Z + 1 };
+		this.Size = parser.GetSize() || simulation.DefaultSize();
 	}
 	
 	Configured() {

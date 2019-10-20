@@ -11,7 +11,6 @@ import Info from './info.js';
 import Settings from './settings.js';
 import Palette from './palette.js';
 import Playback from './playback.js';
-import Simulation from '../simulation/simulation.js';
 
 const BG_NORMAL = "var(--color-5)";
 const BG_DISABLED = "var(--color-7)";
@@ -44,12 +43,10 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.popup.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
 	}
 	
-	LoadSimulation(data) {
-		this.simulation = new Simulation();
+	LoadSimulation(simulation) {
+		this.simulation = simulation;
 		
 		this.simulation.On("Error", this.onError_Handler.bind(this));
-		
-		this.simulation.LoadData(this.Settings.Cache, data);
 		
 		this.popup.Widget.Initialize(this.simulation);
 		
@@ -112,7 +109,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		
 		this.Node("playback").Stop();
 		
-		this.parser.Parse().then((ev) => { this.LoadSimulation(ev.result); });
+		this.parser.Parse(this.Settings).then((ev) => { this.LoadSimulation(ev.result); });
 	}
 	
 	onParserProgress_Handler(ev) {

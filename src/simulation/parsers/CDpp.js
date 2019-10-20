@@ -23,11 +23,12 @@ export default class CDpp extends Parser {
 		super(fileList);
 	}
 	
-	GetFiles (fileList) {		
+	GetFiles (fileList) {
 		return {
-			log : Array.Find(fileList, function(f) { return f.name.match(".log"); }),
-			val : Array.Find(fileList, function(f) { return f.name.match(".val"); }),
-			pal : Array.Find(fileList, function(f) { return f.name.match(".pal"); })
+			log : Array.Find(fileList, function(f) { return f.name.match(/.log/i); }),
+			val : Array.Find(fileList, function(f) { return f.name.match(/.val/i); }),
+			pal : Array.Find(fileList, function(f) { return f.name.match(/.pal/i); }),
+			ma : Array.Find(fileList, function(f) { return f.name.match(/.ma/i); })
 		}
 	}
 	
@@ -54,6 +55,7 @@ export default class CDpp extends Parser {
 		
 		if (this.files.val) defs.push(Sim.ReadFile(this.files.val, this.ParseValFile));
 		if (this.files.pal) defs.push(Sim.ReadFile(this.files.pal, this.ParsePalFile));
+		if (this.files.ma) defs.push(Sim.ReadFile(this.files.ma, this.ParseMaFile));
 		
 		defs.push(this.ParseLogFile());
 		
@@ -76,6 +78,23 @@ export default class CDpp extends Parser {
 		if (this.files.val) messages = messages.concat(this.files.val.content);
 		
 		return messages.concat(this.files.log.content);
+	}
+	
+	GetSize() {
+		if (!this.files.ma) return null;
+		
+		var dim = this.files.ma.content.dim;
+		
+		return { x:dim[0], y:dim[1], z:dim[2] }
+	}
+	
+	ParseMaFile(f) {
+		var raw = f.match(/dim\s*:\s*\((.+)\)/);
+		var dim = raw[1].split(",")
+		
+		if (dim.length == 2) dim.push(1);
+		
+		return { dim : [+dim[1], +dim[0], +dim[2]] }
 	}
 	
 	ParsePalFile(f) {	

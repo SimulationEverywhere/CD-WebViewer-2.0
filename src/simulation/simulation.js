@@ -4,7 +4,6 @@ import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
 import Palette from './palette.js';
 import Selection from './selection.js';
-import Info from './info.js';
 import State from './state.js';
 import Cache from './cache.js';
 import Frame from './frame.js';
@@ -30,48 +29,18 @@ export default class Simulation extends Evented {
 		this.state = null;
 		this.palette = null;
 		this.info = null;
-		this.selection = null;
-	}
-	
-	LoadData(nCache, data) {	
-		this.LoadPalette(data.palette);
-		this.LoadMessages(data.messages);
-		this.LoadInfo(data.messages, data.parser);
-		
 		this.selection = new Selection();
 		this.cache = new Cache();
+	}
+	
+	DefaultSize() {
+		var t = this.FirstFrame().Last();
 		
+		return { x:t.X + 1, y:t.Y + 1, z:t.Z + 1 };
+	}
+	
+	BuildCache(nCache) {
 		this.cache.Build(nCache, this.frames, this.info.size);
-		
-		this.state = this.cache.First();
-		
-		this.BuildDifferences();
-	}
-	
-	LoadPalette(palette) {
-		this.palette = palette;
-	}
-	
-	LoadMessages(messages) {
-		Array.ForEach(messages, function(m) {
-			var frame = this.index[m.id];
-			
-			if (!frame) {
-				frame = new Frame(m.id, m.time);
-				
-				this.index[frame.id] = frame;
-				
-				this.frames.push(frame);
-			}
-			
-			frame.AddTransition(m.coord, m.value);
-		}.bind(this));
-	}
-	
-	LoadInfo(messages, parser) {
-		this.info = new Info();
-		
-		this.info.Load(this, messages, parser);
 	}
 	
 	BuildDifferences() {		
@@ -131,6 +100,14 @@ export default class Simulation extends Evented {
 		this.state.RollbackTransitions(frame);
 		
 		this.Emit("Move", { frame : reverse, direction:"previous" });
+	}
+	
+	StartRecord() {
+		this.Emit("RecordStart");
+	}
+	
+	StopRecord() {
+		this.Emit("RecordStop");
 	}
 	
 	Save() {

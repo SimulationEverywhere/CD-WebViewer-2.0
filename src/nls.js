@@ -76,6 +76,9 @@ var nls = {
 	"Playback_Seek" : {
 		"en" : "Slide to seek frame"
 	},
+	"Playback_Record" : {
+		"en" : "Record simulation to .webm"
+	},
 	"Settings_Title" : {
 		"en" : "Settings"
 	},

@@ -19,7 +19,7 @@ export default class RISE extends Parser {
 		return this.files.log.raw.name.substr(0, i); 
 	}
 	
-	constructor(fileList) {
+	constructor(fileList) {		
 		super(fileList);
 	}
 	
@@ -57,6 +57,10 @@ export default class RISE extends Parser {
 	
 	GetMessages() {
 		return this.files.log.content;
+	}
+	
+	GetSize() {
+		return null;
 	}
 	
 	ParseLogFile() {

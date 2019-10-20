@@ -35,10 +35,6 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 						"<span class='info-value' handle='nFrames'></span>" +
 					"</div>" + 
 					"<div class='info-line'>" +
-						"<span class='info-label'>nls(Info_Label_NumberTransitions)</span>" +
-						"<span class='info-value' handle='nTransitions'></span>" +
-					"</div>" + 
-					"<div class='info-line'>" +
 						"<span class='info-label'>nls(Info_Label_LastFrame)</span>" +
 						"<span class='info-value' handle='lastFrame'></span>" +
 					"</div>" + 
@@ -51,7 +47,6 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 		this.Node("files").innerHTML = "";
 		this.Node("dimensions").innerHTML = "";
 		this.Node("nFrames").innerHTML = "";
-		this.Node("nTransitions").innerHTML = "";
 		this.Node("lastFrame").innerHTML = "";
 		
 		Dom.ToggleCss(this.Node("content"), "hidden", true);
@@ -67,7 +62,6 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 		this.UpdateLine("name", info.Name);
 		this.UpdateLine("dimensions", info.SizeAsString());
 		this.UpdateLine("nFrames", info.NFrames);
-		this.UpdateLine("nTransitions", info.NTransitions);
 		this.UpdateLine("lastFrame", info.LastFrame);
 	}
 	

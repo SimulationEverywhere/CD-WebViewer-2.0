@@ -92,7 +92,7 @@
 	vertical-align : middle;
 }
 
-.playback .controls button {
+.playback button {
 	border-radius : 0px;
 	margin: 0px 1px;
 	width : 28px;
@@ -107,9 +107,17 @@
 	border-radius : 0px 4px 4px 0px;
 }
 
+.playback .record {
+	color : #891010;
+	border-radius : 4px;
+}
+
 .playback .slider {
-    margin: auto 10px;
     width: 200px;
+}
+
+.playback > * {
+    margin: auto 5px;
 }
 
 .settings .settings-line {
