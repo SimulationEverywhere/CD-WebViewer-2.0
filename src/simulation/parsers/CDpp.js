@@ -89,9 +89,18 @@ export default class CDpp extends Parser {
 	}
 	
 	ParseMaFile(f) {
+		var dim = null;
 		var raw = f.match(/dim\s*:\s*\((.+)\)/);
-		var dim = raw[1].split(",")
+				
+		if (raw) dim = raw[1].split(",")
 		
+		else {
+			var raw_h = f.match(/height\s*:\s*(.+)/);
+			var raw_w = f.match(/width\s*:\s*(.+)/);
+			
+			dim = [raw_h[1], raw_w[1]];
+		}
+			
 		if (dim.length == 2) dim.push(1);
 		
 		return { dim : [+dim[1], +dim[0], +dim[2]] }
@@ -99,28 +108,59 @@ export default class CDpp extends Parser {
 	
 	ParsePalFile(f) {	
 		var data = [];
+		var lines = f.split(/\n/);
 		
-		// Type A: [rangeBegin;rangeEnd] R G B
-		Array.ForEach(f.split(/\n/), function(line) { 
-			// skip it it's probably an empty line
-			if (line.length < 7) return;
+		if(lines[0].indexOf('[') != -1) {
+			// Type A: [rangeBegin;rangeEnd] R G B
+			Array.ForEach(lines, function(line) { 
+				// skip it it's probably an empty line
+				if (line.length < 7) return;
+				
+				var begin = parseFloat(line.substr(1));
+				var end   = parseFloat(line.substr(line.indexOf(';') + 1));
+				var rgb = line.substr(line.indexOf(']') + 2).trim().split(' ');
+				
+				// clean empty elements
+				for (var j = rgb.length; j-- > 0;) {
+					if (rgb[j].trim() == "") rgb.splice(j, 1);
+				}			
+				
+				// Parse as decimal int
+				var r = parseInt(rgb[0], 10);
+				var g = parseInt(rgb[1], 10);
+				var b = parseInt(rgb[2], 10);
+				
+				data.push({ start:begin, end:end, color:[r, g, b] });
+			});
+		}
+		else{
+			// Type B (VALIDSAVEFILE: lists R,G,B then lists ranges)
+			var paletteRanges = [];
+			var paletteColors =[];
 			
-			var begin = parseFloat(line.substr(1));
-			var end   = parseFloat(line.substr(line.indexOf(';') + 1));
-			var rgb = line.substr(line.indexOf(']') + 2).trim().split(' ');
-			
-			// clean empty elements
-			for (var j = rgb.length; j-- > 0;) {
-				if (rgb[j].trim() == "") rgb.splice(j, 1);
-			}			
-			
-			// Parse as decimal int
-			var r = parseInt(rgb[0], 10);
-			var g = parseInt(rgb[1], 10);
-			var b = parseInt(rgb[2], 10);
-			
-			data.push({ start:begin, end:end, color:[r, g, b] });
-		});
+			for(var i = lines.length; i-->0;){
+				// check number of components per line
+				var components = lines[i].split(',');
+				
+				if(components.length == 2) {
+				// this line is a value range [start, end]
+					// Use parseFloat to ensure we're processing in decimal not oct
+					paletteRanges.push([parseFloat(components[0]), parseFloat(components[1])]); 
+				}
+				else if (components.length == 3){ 
+				    //this line is a palette element [R,G,B]
+					// Use parseInt(#, 10) to ensure we're processing in decimal not oct
+					paletteColors.push([parseInt(.95*parseInt(components[0],10)), 
+										parseInt(.95*parseInt(components[1],10)), 
+										parseInt(.95*parseInt(components[2],10))]); 
+				}
+			}
+			console.log(paletteColors);
+			// populate grid palette object
+			for (var i=paletteRanges.length; i-->0;){
+				data.push({ start:paletteRanges[i][0], end:paletteRanges[i][1], color:paletteColors[i] });
+			}
+		}	
 		
 		return data;
 	}	
