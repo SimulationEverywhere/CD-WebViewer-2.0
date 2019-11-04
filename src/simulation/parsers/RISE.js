@@ -59,6 +59,10 @@ export default class RISE extends Parser {
 		return this.files.log.content;
 	}
 	
+	GetInit() {
+		return null;
+	}
+	
 	GetSize() {
 		return null;
 	}

@@ -40,7 +40,7 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	}
 	
 	GetState(simulation, i) {
-		var state = State.Zero(simulation.Size);
+		var state = State.Zero(simulation.Size, 0);
 		
 		for (var j = 0; j < i; j++) {
 			Array.ForEach(simulation.frames[j].transitions, function(t) {

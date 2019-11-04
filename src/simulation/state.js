@@ -39,7 +39,9 @@ export default class State {
 		this.i--;
 	}
 	
-	static Zero(size) {
+	static Zero(size, init) {
+		var v = init || 0;
+		
 		var grid = [];
 		
 		for (var i = 0; i < size.x; i++) {
@@ -49,7 +51,7 @@ export default class State {
 				grid[i].push([]);
 			
 				for (var k = 0; k < size.z; k++) {
-					grid[i][j].push(0);
+					grid[i][j].push(v);
 				}
 			}
 		}

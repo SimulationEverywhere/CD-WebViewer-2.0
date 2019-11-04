@@ -54,6 +54,10 @@ export default class Parser extends Evented {
 		throw new Error("Parsers must implement a GetMessages() function");
 	}
 	
+	GetInit() {
+		throw new Error("Parsers must implement a GetInit() function");
+	}
+	
 	GetSize() {
 		throw new Error("Parsers must implement a GetSize() function");
 	}
@@ -92,6 +96,7 @@ export default class Parser extends Evented {
 			var simulation = new Simulation()
 			var results = this.GetFrames();
 			
+			simulation.init = this.GetInit();
 			simulation.palette = this.GetPalette();
 			simulation.frames = results.frames;
 			simulation.index = results.index;

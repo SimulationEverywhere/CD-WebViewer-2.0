@@ -74,10 +74,14 @@ export default class CDpp extends Parser {
 	
 	GetMessages() {
 		var messages = [];
-		
+				
 		if (this.files.val) messages = messages.concat(this.files.val.content);
 		
 		return messages.concat(this.files.log.content);
+	}
+	
+	GetInit() {
+		return this.files.ma ? this.files.ma.content.init : null;
 	}
 	
 	GetSize() {
@@ -89,9 +93,10 @@ export default class CDpp extends Parser {
 	}
 	
 	ParseMaFile(f) {
+		// Dimensions		
 		var dim = null;
 		var raw = f.match(/dim\s*:\s*\((.+)\)/);
-				
+		
 		if (raw) dim = raw[1].split(",")
 		
 		else {
@@ -103,7 +108,13 @@ export default class CDpp extends Parser {
 			
 		if (dim.length == 2) dim.push(1);
 		
-		return { dim : [+dim[1], +dim[0], +dim[2]] }
+		// Global initial value
+		var raw = f.match(/initialvalue\s*:\s*(.+)/);
+		var init = null;
+
+		if (raw) var init = raw[1];
+
+		return { dim : [+dim[1], +dim[0], +dim[2]], init:+init }
 	}
 	
 	ParsePalFile(f) {	

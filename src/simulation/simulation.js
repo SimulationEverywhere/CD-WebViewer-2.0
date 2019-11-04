@@ -26,6 +26,7 @@ export default class Simulation extends Evented {
 		this.frames = [];
 		this.index = {};
 		
+		this.init = null;
 		this.state = null;
 		this.palette = null;
 		this.info = null;
@@ -40,11 +41,11 @@ export default class Simulation extends Evented {
 	}
 	
 	BuildCache(nCache) {
-		this.cache.Build(nCache, this.frames, this.info.size);
+		this.cache.Build(nCache, this.frames, this.info.size, this.init);
 	}
 	
 	BuildDifferences() {		
-		var state = State.Zero(this.info.size);
+		var state = State.Zero(this.info.size, this.init);
 		
 		Array.ForEach(this.frames, function(f) { f.Difference(state); })
 	}
