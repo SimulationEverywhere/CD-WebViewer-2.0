@@ -80,7 +80,7 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 	
 	onSimulationRecordStop_Handler(ev) {	
 		this.recorder.Stop().then(function(ev) {
-			this.recorder.Download(this.simulation.info.Name);
+			this.recorder.Download(this.simulation.name);
 		}.bind(this));	
 	}
 	

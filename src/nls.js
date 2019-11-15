@@ -213,6 +213,9 @@ var nls = {
 	},
 	"Configurator_Title" : {
 		"en" : "{0} Configuration"
+	},
+	"Main_Unsupported_Browser" : {
+		"en" : "This application is for the Chrome browser. It requires many features that are not supported by other browsers."
 	}
 }
 

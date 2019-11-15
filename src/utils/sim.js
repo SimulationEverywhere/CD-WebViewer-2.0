@@ -9,47 +9,67 @@ const PARSERS = [CDpp, RISE];
 
 export default class Sim {
 	
-	static DetectParser(fileList) {
+	static DetectParser(files) {		
 		var d = Lang.Defer();
+		var parsers = PARSERS.map(p => new p(files));
+		var defs = parsers.map(p => p.IsValid());
 		
-		DetectParserI(fileList, 0, d);
+		Promise.all(defs).then(function(results) {
+			var valids = results.filter(r => r.result);
+			
+			if (valids.length > 1) d.Reject(new Error("Files match multiple parsers."));
+			
+			if (valids.length == 0) d.Reject(new Error("Could not detect the simulator used to generate the files."));
+			
+			var idx = results.findIndex(r => r.result);
+			
+			d.Resolve(parsers[idx]);
+		})
 		
 		return d.promise;
-		
-		function DetectParserI(fileList, i, d) {
-			if (i == PARSERS.length) {
-				d.Reject(new Error("Could not detect the simulator used to generate the files"));
-				
-				return;
-			}
-			
-			var parser = new PARSERS[i]();
-			
-			var p = parser.Initialize(fileList);
-			
-			var success = (d, ev) => { d.Resolve({ parser:ev.result }); };
-			
-			var failure = (fileList, i, d, error) => { DetectParserI(fileList, ++i, d); }
-			
-			p.then(success.bind(this, d), failure.bind(this, fileList, i, d));
-		}
 	}
 	
-	static ReadFile(file, parseFn) {
+	static ParseFile(file, parser) {
+		var d = Lang.Defer();
+		var r = new ChunkReader();
+		
+		if (!file) d.Resolve(null);
+		
+		else r.Read(file.raw).then(function(ev) {
+			var content = parser(ev.result);
+			
+			d.Resolve(content);
+		});
+
+		return d.promise;
+	}
+	
+	static ParseFileByChunk(file, parser) {
 		var d = Lang.Defer();
 		var reader = new ChunkReader();
 		
 		if (!file) d.Resolve(null);
 		
-		else {
-			reader.Read(file.raw).then((ev) => { 
-				file.content = parseFn(ev.result); 
-				
-				d.Resolve(file.content);
-			});
-		}
+		ParseFileChunk();
 		
 		return d.promise;
+		
+		function ParseFileChunk() {
+			reader.ReadChunk(file.raw).then((ev) => {
+				var idx = ev.result.lastIndexOf('\n');
+				var content = ev.result.substr(0, idx);
+				
+				reader.MoveCursor(content.length + 1);
+				
+				parser(content, 100 * reader.position / file.raw.size);
+				
+				if (reader.position < file.raw.size) ParseFileChunk();
+				
+				else if (reader.position == file.raw.size) d.Resolve(content);
+				
+				else throw new Error("Reader position exceeded the file size.");
+			});
+		}
 	}
 	
 	static RgbToHex(rgb) {

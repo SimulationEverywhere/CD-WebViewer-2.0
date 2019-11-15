@@ -8,7 +8,7 @@ import Grid from '../gridLayer/grid.js';
 import Automated from '../automated.js';
 import State from '../../simulation/state.js';
 import Frame from '../../simulation/frame.js';
-import Palette from '../../simulation/palettes/d3.js';
+import Palette from '../../simulation/palettes/gradient.js';
 
 export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap extends Automated { 
 
@@ -29,7 +29,7 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		
 		this.BuildTooltip();
 		
-		this.palette = new Palette("internal");
+		this.palette = new Palette();
 		this.state = this.GetState(simulation, simulation.state.i);
 		
 		var max = this.GetMaxTransitions(simulation);
@@ -40,7 +40,7 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	}
 	
 	GetState(simulation, i) {
-		var state = State.Zero(simulation.Size, 0);
+		var state = State.Zero(simulation.Size);
 		
 		for (var j = 0; j < i; j++) {
 			Array.ForEach(simulation.frames[j].transitions, function(t) {

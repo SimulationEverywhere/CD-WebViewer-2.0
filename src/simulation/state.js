@@ -39,10 +39,9 @@ export default class State {
 		this.i--;
 	}
 	
-	static Zero(size, init) {
-		var v = init || 0;
-		
+	static Zero(size, value) {		
 		var grid = [];
+		var v = value || 0;
 		
 		for (var i = 0; i < size.x; i++) {
 			grid.push([]);

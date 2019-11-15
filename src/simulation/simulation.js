@@ -2,7 +2,7 @@
 
 import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
-import Palette from './palette.js';
+import Palette from './palettes/basic.js';
 import Selection from './selection.js';
 import State from './state.js';
 import Cache from './cache.js';
@@ -10,12 +10,10 @@ import Frame from './frame.js';
 
 export default class Simulation extends Evented { 
 	
-	get Size() { return this.info.Size; }
+	get Size() { return this.size; }
 	
 	get Palette() { return this.palette; }
-	
-	get Info() { return this.info; }
-	
+		
 	get State() { return this.state; }
 	
 	get Selection() { return this.selection; }
@@ -26,12 +24,32 @@ export default class Simulation extends Evented {
 		this.frames = [];
 		this.index = {};
 		
-		this.init = null;
+		this.name = null;
+		this.files = null;
+		this.size = null;
+		this.simulator = null;
+		this.nFrames = null;
+		this.lastFrame = null;
+		
 		this.state = null;
-		this.palette = null;
-		this.info = null;
+		this.palette = new Palette();
 		this.selection = new Selection();
 		this.cache = new Cache();
+	}
+	
+	Initialize(info, settings) {
+		this.simulator = info.simulator;
+		this.name = info.name;
+		this.files = info.files;
+		this.lastFrame = info.lastFrame;
+		this.nFrames = info.nFrames;
+		
+		if (!this.size) this.size = this.DefaultSize();
+		
+		this.BuildCache(settings.Cache);
+		this.BuildDifferences();
+		
+		this.state = this.cache.First();
 	}
 	
 	DefaultSize() {
@@ -41,11 +59,15 @@ export default class Simulation extends Evented {
 	}
 	
 	BuildCache(nCache) {
-		this.cache.Build(nCache, this.frames, this.info.size, this.init);
+		var zero = State.Zero(this.size);
+		
+		this.cache.Build(nCache, this.frames, zero);
+		
+		this.state = this.cache.First();
 	}
 	
 	BuildDifferences() {		
-		var state = State.Zero(this.info.size, this.init);
+		var state = State.Zero(this.size);
 		
 		Array.ForEach(this.frames, function(f) { f.Difference(state); })
 	}
@@ -68,8 +90,20 @@ export default class Simulation extends Evented {
 		return this.frames[this.state.i];
 	}
 	
+	AddFrame(id, time) {		
+		var n = this.frames.push(new Frame(id, time));
+		
+		this.index[id] = this.frames[n - 1];
+		
+		return this.frames[n - 1];
+	}
+	
 	Frame(i) {
 		return this.frames[i];
+	}
+	
+	Index(id) {
+		return this.index[id];
 	}
 	
 	FirstFrame(i) {

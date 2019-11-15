@@ -53,16 +53,16 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 		Dom.ToggleCss(this.Node("noFiles"), "hidden", false);
 	}
 	
-	Initialize(info) {
+	Initialize(simulation) {
 		Dom.ToggleCss(this.Node("noFiles"), "hidden", true);
 		Dom.ToggleCss(this.Node("content"), "hidden", false);
 		
-		this.UpdateLine("simulator", info.Simulator);
-		this.UpdateLine("files", info.FilesAsString());
-		this.UpdateLine("name", info.Name);
-		this.UpdateLine("dimensions", info.SizeAsString());
-		this.UpdateLine("nFrames", info.NFrames);
-		this.UpdateLine("lastFrame", info.LastFrame);
+		this.UpdateLine("simulator", simulation.simulator);
+		this.UpdateLine("files", this.FilesAsString(simulation));
+		this.UpdateLine("name", simulation.name);
+		this.UpdateLine("dimensions", this.SizeAsString(simulation));
+		this.UpdateLine("nFrames", simulation.nFrames);
+		this.UpdateLine("lastFrame", simulation.lastFrame);
 	}
 	
 	UpdateLine(id, value) {
@@ -74,4 +74,16 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 			this.Node(id).innerHTML = value;
 		}
 	}
+	
+	SizeAsString(simulation) {
+		if (!simulation.size) return null;
+	
+		return `${simulation.size.x}, ${simulation.size.y}, ${simulation.size.z}`;
+	}
+	
+	FilesAsString(simulation) {		
+		return simulation.files.map(f => f.name).join(", ");
+	}
+	
+	
 });

@@ -3,102 +3,58 @@
 import Lang from '../../utils/lang.js';
 import Array from '../../utils/array.js';
 import Sim from '../../utils/sim.js';
-import Message from '../message.js';
+import Simulation from '../simulation.js';
 import Frame from '../frame.js';
 import Parser from "./parser.js";
-import Palette from '../palette.js';
 import ChunkReader from '../../components/chunkReader.js';
 
 export default class RISE extends Parser { 
 	
-	get Type() { return "RISE"; }
-	
-	get ModelName() { 
-		var i = this.files.log.raw.name.lastIndexOf(".");
-		
-		return this.files.log.raw.name.substr(0, i); 
-	}
-	
-	constructor(fileList) {		
-		super(fileList);
-	}
-	
-	GetFiles (fileList) {		
-		return {
-			log : Array.Find(fileList, function(f) { return f.name.match(".log"); })
-		}
+	constructor(files) {
+		super(files);
 	}
 	
 	IsValid() {		
 		var d = Lang.Defer();
+		var log = Array.Find(this.files, function(f) { return f.name.match(".log"); });
 		
-		if (!this.files.log) d.Reject(new Error(`CD++ Parser is not valid for the selected files.` ));
+		if (!log) d.Resolve(null);
 			
-		var reader = new ChunkReader();
+		var r = new ChunkReader();
 		
-		reader.ReadChunk(this.files.log.raw, 200).then((ev) => {
-			var isValid = ev.result.indexOf("0 / L / ") >= 0;
-			
-			if (isValid) d.Resolve(this);
-			
-			d.Reject(new Error(`Rise Parser is not valid for the selected files.`));
-		});
+		r.ReadChunk(log.raw, 200).then((ev) =>  d.Resolve(ev.result.indexOf("0 / L / ") >= 0));
 		
 		return d.promise;
 	}
 	
-	ParseTasks() {		
-		return [this.ParseLogFile()];
-	}
-	
-	GetPalette() {
-		return new Palette();
-	}
-	
-	GetMessages() {
-		return this.files.log.content;
-	}
-	
-	GetInit() {
-		return null;
-	}
-	
-	GetSize() {
-		return null;
-	}
-	
-	ParseLogFile() {
-		this.files.log.content = [];
-		
+	Parse(files, settings) {
 		var d = Lang.Defer();
-		var reader = new ChunkReader();
+		var simulation = new Simulation();
 		
-		this.ParseChunks(reader, this.files.log, d);
+		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
+
+		var p = Sim.ParseFileByChunk(log, this.ParseLogChunk.bind(this, simulation));
+			
+		var defs = [p];
+	
+		Promise.all(defs).then((data) => {
+			var info = {
+				simulator : "RISE",
+				name : log.name.replace(/\.[^.]*$/, ''),
+				files : files,
+				lastFrame : simulation.LastFrame().id,
+				nFrames : simulation.frames.length
+			}
+			
+			simulation.Initialize(info, settings);
+		
+			d.Resolve(simulation);
+		});
 		
 		return d.promise;
 	}
-	
-	ParseChunks(reader, log, defer) {
-		reader.ReadChunk(log.raw).then((ev) => {
-			var idx = ev.result.lastIndexOf('\n');
-			var chunk = ev.result.substr(0, idx);
-			var messages = this.ParseSafeChunk(chunk);
-			
-			log.content = log.content.concat(messages);
-
-			reader.MoveCursor(chunk.length + 1);
-			
-			this.Emit("Progress", { progress: 100 * reader.position / log.raw.size });
-			
-			if (reader.position < log.raw.size) this.ParseChunks(reader, log, defer);
-			
-			else if (reader.position == log.raw.size) defer.Resolve(log.content);
-			
-			else throw new Error("Reader position exceeded the file size.");
-		});
-	}
 		
-	ParseSafeChunk(chunk) {
+	ParseLogChunk(simulation, chunk, progress) {
 		var lines = [];
 		var start = chunk.indexOf('0 / L / Y', 0);
 							
@@ -113,9 +69,7 @@ export default class RISE extends Parser {
 
 			var start = chunk.indexOf('0 / L / Y', start + length);
 		}
-		
-		var safe = [];
-		
+				
 		Array.ForEach(lines, function(line) {
 			var split = line.split("/");
 			
@@ -137,9 +91,11 @@ export default class RISE extends Parser {
 			
 			var time = Array.Map(idx.split(":"), function(t) { return +t; });
 			
-			safe.push(new Message(idx, time, coord, v));
+			var f = simulation.Index(idx) || simulation.AddFrame(idx, time);
+			
+			f.AddTransition(coord, v);
 		});
-
-		return safe;
+		
+		this.Emit("Progress", { progress: progress });
 	}
 }
