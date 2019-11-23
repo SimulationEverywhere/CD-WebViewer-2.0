@@ -21,6 +21,8 @@ export default Lang.Templatable("Auto.Selector", class AutoSelector extends Auto
 	
 	Destroy() {
 		super.Destroy();
+		
+		this.Widget.Destroy();
 	}
 	
 	Save() {

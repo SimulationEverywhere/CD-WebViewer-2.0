@@ -2,7 +2,6 @@
 
 import nls from './nls.js';
 import Lang from './utils/lang.js';
-import Net from './utils/net.js';
 import Array from './utils/array.js';
 import Dom from './utils/dom.js';
 import Widget from './ui/widget.js';
@@ -13,12 +12,12 @@ import Session from './simulation/session.js';
 
 export default class Main extends Widget { 
 
-	constructor(node) {
+	constructor(node) {		
 		Lang.locale = "en";
 		Lang.nls = nls;
 		
 		super(node);
-				
+		
 		this.Node("control").On("Ready", this.onControlReady_Handler.bind(this));
 		this.Node("control").On("Save", this.onControlSave_Handler.bind(this));
 		
@@ -26,7 +25,7 @@ export default class Main extends Widget {
 		this.Node("dashboard").On("NewWidget", this.onDashboardNewWidget_Handler.bind(this));
 		this.Node("dashboard").Resize();
 	}
-		
+	
 	onControlReady_Handler(ev) {
 		Dom.RemoveCss(this.Node("dashboard").container, "hidden");
 		
@@ -61,7 +60,7 @@ export default class Main extends Widget {
 	}
 	
 	onControlSave_Handler() {
-		Net.Download(this.simulation.Info.Name + ".json", this.session.Save());
+		Lang.Download(this.simulation.Info.Name + ".json", this.session.Save());
 	}
 	
 	SetWidgetInCell(cell, definition, configuration) {

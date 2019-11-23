@@ -10,10 +10,8 @@ const DEFAULT_COLOR = "#fff";
 
 export default Lang.Templatable("Grid.Grid", class Grid extends Widget { 
 
-	get Canvas() { return this.Node("canvas"); }
-	
-	constructor(node) {
-		super(node);
+	constructor() {
+		super();
 
 		this.dimensions = null;
 		this.cell = null;
@@ -73,7 +71,8 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 	DrawState(state, z, palette, selection) {		
 		for (var i = 0; i < this.dimensions.x; i++) {
 			for (var j = 0; j < this.dimensions.y; j++) {
-				var v = state.GetValue(i, j, z);
+				var id = i + "-" + j + "-" + z;
+				var v = state.model[id];
 							
 				var x = i * this.cell;
 				var y = j * this.cell;
@@ -88,15 +87,19 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 	
 	DrawChanges(frame, z, palette, selection) {
 		Array.ForEach(frame.transitions, function(t) {
-			if (t.Z != z) return;
+			var t_id = t.id.split("-");
+			var t_x = t_id[0];
+			var t_y = t_id[1];
+			var t_z = t_id[2];
+			if (t_z != z) return;
 			
-			var x = t.X * this.cell;
-			var y = t.Y * this.cell;
+			var x = t_x * this.cell;
+			var y = t_y * this.cell;
 			
 			this.ctx.fillStyle = palette.GetColor(t.Value);
 			this.ctx.fillRect(x, y, this.cell, this.cell);
 				
-			if (selection.IsSelected(t.X, t.Y, z)) this.DrawCellBorder(t.X, t.Y, palette.SelectedColor);
+			if (selection.IsSelected(t_x, t_y, z)) this.DrawCellBorder(t_x, t_y, palette.SelectedColor);
 		}.bind(this));
 	}
 	

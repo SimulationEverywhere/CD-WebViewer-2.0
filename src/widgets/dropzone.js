@@ -31,7 +31,7 @@ export default Lang.Templatable("Widget.Dropzone", class Dropzone extends Widget
 		if (ev.target.files.length == 0) return;
 				
 		this.files = Array.Map(ev.target.files, function(f) { 
-			return f;
+			return { name:f.name, content:null, raw:f };
 		});
 		
 		var css = ev.target.files.length > 0 ? "fas fa-thumbs-up" : "fas fa-exclamation-triangle";

@@ -1,73 +1,88 @@
-'use strict';
+//'use strict';
 
 import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
-import Palette from './palettes/basic.js';
+import Palette from './palette.js';
 import Selection from './selection.js';
+import Info from './info.js';
 import State from './state.js';
 import Cache from './cache.js';
 import Frame from './frame.js';
 
 export default class Simulation extends Evented { 
 	
-	get Size() { return this.size; }
-	
+	get Size() { return this.info.Size; }
+
 	get Palette() { return this.palette; }
-		
-	get State() { return this.state; }
 	
+	get Info() { return this.info; }
+	
+	get State() { return this.state; }
+
+	get Models() { return this.models; }
+
+	get ModelLength() { return this.modelLength; }
+
 	get Selection() { return this.selection; }
-		
+
+	get StateMaxFrequency() { 
+		if(this.info.Simulator == 'DEVS'){
+			return this.info.Size;
+		}
+		else{
+			return this.info.Size.x * this.info.Size.y; 
+		}
+
+	}
+	
 	constructor() {
 		super();
 		
 		this.frames = [];
-		this.index = {};
-		
-		this.name = null;
-		this.files = null;
-		this.size = null;
-		this.simulator = null;
-		this.nFrames = null;
-		this.lastFrame = null;
-		
+		this.models = [];
+		this.modelLength = 0;
 		this.state = null;
-		this.palette = new Palette();
+		this.palette = null;
+		this.info = null;
+		this.selection = null;
+	}
+	
+	LoadData(nCache, data) {	
+		this.LoadPalette(data.palette);
+		this.LoadFrames(data.frames);
+		this.LoadModels(data.models);
+		this.LoadInfo(data.parser);
 		this.selection = new Selection();
 		this.cache = new Cache();
-	}
-	
-	Initialize(info, settings) {
-		this.simulator = info.simulator;
-		this.name = info.name;
-		this.files = info.files;
-		this.lastFrame = info.lastFrame;
-		this.nFrames = info.nFrames;
 		
-		if (!this.size) this.size = this.DefaultSize();
+		this.cache.Build(nCache, this.frames, this.models);
 		
-		this.BuildCache(settings.Cache);
+		this.state = this.cache.First();
+		
 		this.BuildDifferences();
-		
-		this.state = this.cache.First();
 	}
 	
-	DefaultSize() {
-		var t = this.FirstFrame().Last();
-		
-		return { x:t.X + 1, y:t.Y + 1, z:t.Z + 1 };
+	LoadPalette(palette) {
+		this.palette = palette;
 	}
 	
-	BuildCache(nCache) {
-		var zero = State.Zero(this.size);
+	LoadFrames(frames) {
+		this.frames = frames;
+	}
+
+	LoadModels(models) {
+		this.models = models;
+		for (var id in this.models) this.modelLength++;
+	}
+	
+	LoadInfo(parser) {
+		this.info = new Info();
 		
-		this.cache.Build(nCache, this.frames, zero);
-		
-		this.state = this.cache.First();
+		this.info.Load(this, parser);
 	}
 	
 	BuildDifferences() {		
-		var state = State.Zero(this.size);
+		var state = State.Zero(this.models);
 		
 		Array.ForEach(this.frames, function(f) { f.Difference(state); })
 	}
@@ -90,20 +105,8 @@ export default class Simulation extends Evented {
 		return this.frames[this.state.i];
 	}
 	
-	AddFrame(id, time) {		
-		var n = this.frames.push(new Frame(id, time));
-		
-		this.index[id] = this.frames[n - 1];
-		
-		return this.frames[n - 1];
-	}
-	
 	Frame(i) {
 		return this.frames[i];
-	}
-	
-	Index(id) {
-		return this.index[id];
 	}
 	
 	FirstFrame(i) {
@@ -135,14 +138,6 @@ export default class Simulation extends Evented {
 		this.state.RollbackTransitions(frame);
 		
 		this.Emit("Move", { frame : reverse, direction:"previous" });
-	}
-	
-	StartRecord() {
-		this.Emit("RecordStart");
-	}
-	
-	StopRecord() {
-		this.Emit("RecordStop");
 	}
 	
 	Save() {

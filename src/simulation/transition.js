@@ -2,29 +2,17 @@
 
 export default class Transition { 
 
-	constructor(coord, value, diff) {
-		this.id = `${coord.x},${coord.y},${coord.z}`;
-		this.coord = coord;
+	constructor(id, value, diff) {
+
+		this.id = id;
 		this.value = value;
 		this.diff = diff;
 	}
-	
-	get Coord() {
-		return this.coord;
+
+	get Id() {
+		return this.id;
 	}
-	
-	get X() {
-		return this.coord.x;
-	}
-	
-	get Y() {
-		return this.coord.y;
-	}
-	
-	get Z() {
-		return this.coord.z;
-	}
-	
+
 	get Value() {
 		return this.value;
 	}

@@ -16,7 +16,7 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 		
 		this.z = config.z;
 		this.tracked = this.GetTemporaryTracked(config.tracked, simulation.Palette);
-		this.yMax = simulation.Size.x * simulation.Size.y;
+		this.yMax = simulation.StateMaxFrequency;
 		
 		var h1 = this.Widget.On("MouseMove", this.onMouseMove_Handler.bind(this));
 		var h2 = this.Widget.On("MouseOut", this.onMouseOut_Handler.bind(this));
@@ -70,20 +70,16 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 	
 		Array.ForEach(this.tracked, function(t) {
 			t.total = 0;
-			
-			for (var x = 0; x < state.grid.length; x++) {
-				for (var y = 0; y < state.grid[x].length; y++) {
-					for (var k = 0; k < this.z.length; k++) {
-						var value = state.GetValue(x, y, this.z[k]);
+			for(var id in state.model){
+				var value = state.model[id];
 												
-						if (t.value == value) t.total++;
-						
-						if (!t.range) continue;
-						
-						if (t.range.min < value && t.range.max >= value) t.total++;
-					}
-				}
+				if (t.value == value) t.total++;
+				
+				if (!t.range) continue;
+				
+				if (t.range.min < value && t.range.max >= value) t.total++;
 			}
+
 		}.bind(this));
 		
 		this.Widget.Data(this.tracked);

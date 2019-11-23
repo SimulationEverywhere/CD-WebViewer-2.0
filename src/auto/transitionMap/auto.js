@@ -8,7 +8,7 @@ import Grid from '../gridLayer/grid.js';
 import Automated from '../automated.js';
 import State from '../../simulation/state.js';
 import Frame from '../../simulation/frame.js';
-import Palette from '../../simulation/palettes/gradient.js';
+import Palette from '../../simulation/palettes/d3.js';
 
 export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap extends Automated { 
 
@@ -29,7 +29,7 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		
 		this.BuildTooltip();
 		
-		this.palette = new Palette();
+		this.palette = new Palette("internal");
 		this.state = this.GetState(simulation, simulation.state.i);
 		
 		var max = this.GetMaxTransitions(simulation);
@@ -40,11 +40,11 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	}
 	
 	GetState(simulation, i) {
-		var state = State.Zero(simulation.Size);
+		var state = State.Zero(simulation.models);
 		
 		for (var j = 0; j < i; j++) {
 			Array.ForEach(simulation.frames[j].transitions, function(t) {
-				state.grid[t.X][t.Y][t.Z]++;				
+				state.model[t.id]++;				
 			});
 		}
 				
@@ -56,14 +56,14 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		
 		var max = 0;
 		
-		for (var i = 0; i < state.grid.length; i++) {
-			for (var j = 0; j < state.grid[i].length; j++) {
-				var v = state.grid[i][j][this.z];
+		for(var id in state.model){
+			var idx = id.split("-");
+			var i = idx[0] + "-" + idx[1] + "-" + this.z;
+			var v = state.model[id];
 				
-				if (v > max) max = v;
-			}
+			if (v > max) max = v;
+
 		}
-		
 		return max;
 	}
 	
@@ -95,9 +95,11 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		var frame = new Frame("internal", "0");
 	
 		Array.ForEach(ev.frame.transitions, function(t) {			
-			this.state.grid[t.X][t.Y][t.Z] += plus;
-			
-			frame.AddTransition(t.Coord, this.state.grid[t.X][t.Y][t.Z], null);
+
+			this.state.model[t.id] +=plus;
+
+			frame.AddTransition(t.id, this.state.model[t.id], null);
+		
 		}.bind(this));
 		
 		this.Widget.DrawChanges(frame, this.z, this.palette, this.Simulation.selection);
@@ -110,7 +112,10 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	}
 	
 	onMouseMove_Handler(ev) {
-		var state = this.state.GetValue(ev.data.x, ev.data.y, this.z);
+		//var state = this.state.GetValue(ev.data.x, ev.data.y, this.z);
+		var id = ev.data.x + "-" + ev.data.y + "-" + this.z;
+		var state = this.state.model[id];
+
 		var subs = [ev.data.x, ev.data.y, this.z, state];
 		
 		this.tooltip.nodes.label.innerHTML = Lang.Nls("Widget_AutoTransitionMap_Tooltip_Title", subs);

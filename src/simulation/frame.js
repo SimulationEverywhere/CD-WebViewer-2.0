@@ -5,8 +5,7 @@ import Transition from './transition.js';
 
 export default class Frame { 
 
-	constructor(id, time) {
-		this.id = id;
+	constructor(time) {
 		this.time = time;
 		this.transitions = [];
 		this.index = {};
@@ -16,8 +15,8 @@ export default class Frame {
 		return this.transitions.length;
 	}
 	
-	AddTransition(coord, value, diff) {
-		var t = new Transition(coord, value, diff);
+	AddTransition(id, value, diff) {
+		var t = new Transition(id, value, diff);
 		
 		this.index[t.id] = t;
 		
@@ -41,10 +40,10 @@ export default class Frame {
 	}
 	
 	Reverse () {
-		var reverse = new Frame(this.id, this.time)
+		var reverse = new Frame(this.time)
 		
 		Array.ForEach(this.transitions, function(t) {
-			reverse.AddTransition(t.Coord, t.Value - t.Diff, t.Diff);
+			reverse.AddTransition(t.id, t.value - t.diff, t.diff);
 		})
 		
 		return reverse;
@@ -54,9 +53,9 @@ export default class Frame {
 		for (var i = 0; i < this.Length; i++) {
 			var t = this.Transition(i);
 			 
-			t.Diff = t.Value - state.GetValue(t.X, t.Y, t.Z);
+			t.diff = t.value - state.GetValue(t.id);
 			
-			state.SetValue(t.X, t.Y, t.Z, t.Value);
+			state.SetValue(t.id, t.value);
 		}
 	}
 }

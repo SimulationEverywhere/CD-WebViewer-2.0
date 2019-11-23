@@ -10,6 +10,7 @@ import Automated from '../automated.js';
 export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart extends Automated { 
 	
 	constructor(config, simulation) {
+	
 		super(new CellTrackChart(), simulation);
 		
 		this.selected = [];
@@ -93,10 +94,11 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 				if (data.max < v) data.max = v; 
 			}.bind(this));
 								
-			data.times.push(f.id);
+			data.times.push(f.time);
 		}.bind(this));
 		
 		this.Widget.Data(data);
+		//console.log(data);
 	}
 
 	// TODO: This can be made more efficient by applying only the transitions
@@ -129,7 +131,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 	
 	UpdateSelected() {
 		this.selected = Array.Map(this.Simulation.Selection.Selected, function(s) {
-			return `${s.x},${s.y},${s.z}`
+			return s;
 		});
 	}
 	

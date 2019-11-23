@@ -14,26 +14,26 @@ export default class Selection extends Evented {
 		this.selected = [];
 	}
 	
-	IsSelected(x, y, z) {
+	IsSelected(mod) {
 		return Array.Has(this.selected, function(s) { 
-			return s.x == x && s.y == y && s.z == z;
+			return s == mod;
 		});
 	}
 	
-	Select(x, y, z) {
-		this.selected.push({ x:x, y:y, z:z });
+	Select(mod) {
+		this.selected.push( mod );
 		
-		this.Emit("Change", { x:x, y:y, z:z, selected:true });
+		this.Emit("Change", { mod, selected:true });
 	}
 	
-	Deselect(x, y, z) {
+	Deselect(mod) {
 		var idx = Array.FindIndex(this.selected, function(s) { 
-			return s.x == x && s.y == y && s.z == z;
+			return s == mod;
 		});
 		
 		this.selected.splice(idx, 1);
 		
-		this.Emit("Change", { x:x, y:y, z:z, selected:false });
+		this.Emit("Change", { mod, selected:false });
 	}
 	
 	Save() {
@@ -42,7 +42,7 @@ export default class Selection extends Evented {
 	
 	Load(config) {
 		Array.ForEach(config, function(sel) {
-			this.selected.push({ x:sel.x, y:sel.y, z:sel.z });
+			this.selected.push( sel );
 		}.bind(this));
 		
 		this.Emit("Session", { selection:this });		

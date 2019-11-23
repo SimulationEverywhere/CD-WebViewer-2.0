@@ -11,6 +11,7 @@ import Info from './info.js';
 import Settings from './settings.js';
 import Palette from './palette.js';
 import Playback from './playback.js';
+import Simulation from '../simulation/simulation.js';
 
 const BG_NORMAL = "var(--color-5)";
 const BG_DISABLED = "var(--color-7)";
@@ -26,7 +27,6 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	constructor(node) {		
 		super(node);
 		
-		this.files = null;
 		this.config = null;
 		this.parser = null;
 		this.collapsed = false;
@@ -44,15 +44,17 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.popup.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
 	}
 	
-	LoadSimulation(simulation) {
-		this.simulation = simulation;
+	LoadSimulation(data) {
+		this.simulation = new Simulation();
 		
 		this.simulation.On("Error", this.onError_Handler.bind(this));
+		
+		this.simulation.LoadData(this.Settings.Cache, data);
 		
 		this.popup.Widget.Initialize(this.simulation);
 		
 		this.Node("playback").Initialize(this.simulation, this.Settings);
-		this.Node("info").Initialize(this.simulation);	
+		this.Node("info").Initialize(this.simulation.info);	
 		
 		this.Node("load").disabled = false;
 		this.Node("dbSave").disabled = false;
@@ -83,16 +85,16 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	}
 	
 	onParserDetected_Handler(ev) {
-		this.parser = ev.result;
+		this.parser = ev.result.parser;
 		
-		this.files = this.Node("dropzone").files;
-		
-		var json = Array.Find(this.files, function(f) { return f.name.match(/.json/i); });
+		var fileList = this.Node("dropzone").files;
+		var name = `${this.parser.ModelName}.json`;
+		var file = Array.Find(fileList, function(f) { return f.name.match(name); });
 		
 		var success = this.onConfigParsed_Handler.bind(this);
 		var failure = this.onError_Handler.bind(this);
 		
-		Sim.ParseFile(json, (d) => { return JSON.parse(d); }).then(success, failure);
+		Sim.ReadFile(file, (d) => { return JSON.parse(d); }).then(success, failure);
 	}
 	
 	onConfigParsed_Handler(ev) {
@@ -110,7 +112,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		
 		this.Node("playback").Stop();
 		
-		this.parser.Parse(this.files, this.Settings).then((ev) => { this.LoadSimulation(ev.result); });
+		this.parser.Parse().then((ev) => { this.LoadSimulation(ev.result); });
 	}
 	
 	onParserProgress_Handler(ev) {
