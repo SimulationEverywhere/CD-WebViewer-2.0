@@ -79,7 +79,6 @@ export default Lang.Templatable("Chart.CellTrackChart", class CellTrackChart ext
 	}
 	
 	Draw() {
-		
 		// all this redraws things that can change often
 		var domain = Array.Map(this.data, function(d) { return d.label; });
 		

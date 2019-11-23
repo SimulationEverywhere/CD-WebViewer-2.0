@@ -31,8 +31,9 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		
 		this.palette = new Palette("internal");
 		this.state = this.GetState(simulation, simulation.state.i);
-		
+		var state_clone = JSON.parse(JSON.stringify(this.state));
 		var max = this.GetMaxTransitions(simulation);
+		this.state = state_clone;
 		
 		var classes = this.palette.Buckets(this.n, this.min, this.max, 0, max);
 		
@@ -58,8 +59,8 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		
 		for(var id in state.model){
 			var idx = id.split("-");
-			var i = idx[0] + "-" + idx[1] + "-" + this.z;
-			var v = state.model[id];
+			var idt = idx[0] + "-" + idx[1] + "-" + this.z;
+			var v = state.model[idt];
 				
 			if (v > max) max = v;
 

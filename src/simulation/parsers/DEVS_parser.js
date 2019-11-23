@@ -73,18 +73,6 @@ export default class DEVS extends Parser {
 		return this.models;
 	}
 	
-	ParseMaFile(f) {	
-		var data = [];
-		
-		// Type A: [rangeBegin;rangeEnd] R G B
-		Array.ForEach(f.split(/\n/), function(line) { 
-
-		});
-		
-		return data;
-	}	
-	
-	
 	ParseLogFile() {
 		this.files.log.content = [];
 		
@@ -130,11 +118,9 @@ export default class DEVS extends Parser {
 			var start = chunk.indexOf('Mensaje Y', start + length);
 		}
 		
-		var safe = [];
-		
 		Array.ForEach(lines, function(line) {
 			var split = line.split("/");
-			// Parse coordinates
+			// Parse models
 			var i = split[2].indexOf('(');
 			var j = split[2].indexOf(')');
 			var c = split[2].substring(i + 1, j).split(',');
@@ -142,16 +128,12 @@ export default class DEVS extends Parser {
 			// TODO : Does this ever happen?
 			if (c.length > 1) return;
 
-			//var coord = { x:parseInt(c[1],10), y:parseInt(c[0],10), z:parseInt(c.length==3 ? c[2] : 0, 10) }
-			//var coord = { x:parseInt(c[0],10), y:parseInt(c[0],10), z:parseInt(c[0],10) }
 			var model = c[0] ;
 			// Parse state value
 			var v = parseFloat(split[4]);
 			
 			// Parse Timestamp
 			var idx = split[1].trim();
-			
-			//var time = Array.Map(idx.split(":"), function(t) { return +t; });
 
 			var frame = this.index[idx];
 			

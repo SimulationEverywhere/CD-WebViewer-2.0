@@ -49,24 +49,6 @@ var nls = {
 	"Info_Label_NumberFrames" : {
 		"en" : "Number of frames:"
 	},
-	"Widget_AutoDevsDiagram" : {
-		"en" : "DEVS Diagram"		
-	},
-	"DevsDiagram_Title" : {
-		"en" : "DEVS Diagram"
-	},
-	"Widget_DEVS_Tooltip_Title" : {
-		"en" : "Model Id : {0} ||  State : {1}."		
-	},
-	"Widget_DevsDiagram" : {
-		"en" : "Select a SVG File: "		
-	},
-	"SVG_Instructions" : {
-		"en":"Click to browse"
-	},
-	"SVG_Title" : {
-		"en":"SVG files"
-	},
 	"Info_Label_NumberTransitions" : {
 		"en" : "Number of transitions:"
 	},

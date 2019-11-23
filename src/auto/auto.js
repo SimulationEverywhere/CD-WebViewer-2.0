@@ -10,9 +10,6 @@ import StateSum from './stateSum/auto.js';
 import StateSumConfig from './stateSum/config.js';
 import TransitionMap from './transitionMap/auto.js';
 import TransitionMapConfig from './transitionMap/config.js';
-import Simulation from '../simulation/simulation.js';
-import DevsDiagram from './devsDiagram/auto.js';
-import DevsDiagramConfig from './devsDiagram/config.js';
 
 let AUTOS = [{
 		id : "gridLayer",
@@ -34,11 +31,6 @@ let AUTOS = [{
 		nls : "Widget_AutoTransitionMap",
 		definition : TransitionMap,
 		configurator : TransitionMapConfig
-	},{
-		id : "devsDiagram",
-		nls : "Widget_AutoDevsDiagram",
-		definition : DevsDiagram,
-		configurator : DevsDiagramConfig
 	}];
 
 	let AUTOD = [{
@@ -51,11 +43,6 @@ let AUTOS = [{
 		nls : "Widget_AutoStateChart",
 		definition : StateSum,
 		configurator : StateSumConfig
-	},{
-		id : "devsDiagram",
-		nls : "Widget_AutoDevsDiagram",
-		definition : DevsDiagram,
-		configurator : DevsDiagramConfig
 	}];
 
 export default class Auto { 
