@@ -2,18 +2,21 @@
 
 import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
-import Palette from './palettes/basic.js';
+import Palette from './palette.js';
 import Selection from './selection.js';
+import Info from './info.js';
 import State from './state.js';
 import Cache from './cache.js';
 import Frame from './frame.js';
 
 export default class Simulation extends Evented { 
 	
-	get Size() { return this.size; }
+	get Size() { return this.info.Size; }
 	
 	get Palette() { return this.palette; }
-		
+	
+	get Info() { return this.info; }
+	
 	get State() { return this.state; }
 	
 	get Selection() { return this.selection; }
@@ -24,50 +27,55 @@ export default class Simulation extends Evented {
 		this.frames = [];
 		this.index = {};
 		
-		this.name = null;
-		this.files = null;
-		this.size = null;
-		this.simulator = null;
-		this.nFrames = null;
-		this.lastFrame = null;
-		
 		this.state = null;
-		this.palette = new Palette();
+		this.palette = null;
+		this.info = null;
+		this.selection = null;
+	}
+	
+	LoadData(nCache, data) {	
+		this.LoadPalette(data.palette);
+		this.LoadMessages(data.messages);
+		this.LoadInfo(data.messages, data.parser);
+		
 		this.selection = new Selection();
 		this.cache = new Cache();
-	}
-	
-	Initialize(info, settings) {
-		this.simulator = info.simulator;
-		this.name = info.name;
-		this.files = info.files;
-		this.lastFrame = info.lastFrame;
-		this.nFrames = info.nFrames;
 		
-		if (!this.size) this.size = this.DefaultSize();
+		this.cache.Build(nCache, this.frames, this.info.size);
 		
-		this.BuildCache(settings.Cache);
+		this.state = this.cache.First();
+		
 		this.BuildDifferences();
-		
-		this.state = this.cache.First();
 	}
 	
-	DefaultSize() {
-		var t = this.FirstFrame().Last();
-		
-		return { x:t.X + 1, y:t.Y + 1, z:t.Z + 1 };
+	LoadPalette(palette) {
+		this.palette = palette;
 	}
 	
-	BuildCache(nCache) {
-		var zero = State.Zero(this.size);
+	LoadMessages(messages) {
+		Array.ForEach(messages, function(m) {
+			var frame = this.index[m.id];
+			
+			if (!frame) {
+				frame = new Frame(m.id, m.time);
+				
+				this.index[frame.id] = frame;
+				
+				this.frames.push(frame);
+			}
+			
+			frame.AddTransition(m.coord, m.value);
+		}.bind(this));
+	}
+	
+	LoadInfo(messages, parser) {
+		this.info = new Info();
 		
-		this.cache.Build(nCache, this.frames, zero);
-		
-		this.state = this.cache.First();
+		this.info.Load(this, messages, parser);
 	}
 	
 	BuildDifferences() {		
-		var state = State.Zero(this.size);
+		var state = State.Zero(this.info.size);
 		
 		Array.ForEach(this.frames, function(f) { f.Difference(state); })
 	}
@@ -90,20 +98,8 @@ export default class Simulation extends Evented {
 		return this.frames[this.state.i];
 	}
 	
-	AddFrame(id, time) {		
-		var n = this.frames.push(new Frame(id, time));
-		
-		this.index[id] = this.frames[n - 1];
-		
-		return this.frames[n - 1];
-	}
-	
 	Frame(i) {
 		return this.frames[i];
-	}
-	
-	Index(id) {
-		return this.index[id];
 	}
 	
 	FirstFrame(i) {
@@ -135,14 +131,6 @@ export default class Simulation extends Evented {
 		this.state.RollbackTransitions(frame);
 		
 		this.Emit("Move", { frame : reverse, direction:"previous" });
-	}
-	
-	StartRecord() {
-		this.Emit("RecordStart");
-	}
-	
-	StopRecord() {
-		this.Emit("RecordStop");
 	}
 	
 	Save() {

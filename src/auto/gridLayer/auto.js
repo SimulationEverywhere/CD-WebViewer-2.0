@@ -6,15 +6,12 @@ import Dom from '../../utils/dom.js';
 import Tooltip from '../../ui/tooltip.js';
 import Grid from './grid.js';
 import Automated from '../automated.js';
-import Recorder from '../../components/record.js';
 
 export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated { 
 
 	constructor(config, simulation) {
 		super(new Grid(), simulation);
 		
-		this.recorder = new Recorder(this.Widget.Canvas);
-
 		this.z = config.z;
 		
 		var h1 = this.Widget.On("MouseMove", this.onMouseMove_Handler.bind(this));
@@ -22,11 +19,9 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 		var h3 = this.Widget.On("Click", this.onClick_Handler.bind(this));
 		var h4 = this.Simulation.On("Move", this.onSimulationMove_Handler.bind(this));
 		var h5 = this.Simulation.On("Jump", this.onSimulationJump_Handler.bind(this));
-		var h6 = this.Simulation.On("RecordStart", this.onSimulationRecordStart_Handler.bind(this));
-		var h7 = this.Simulation.On("RecordStop", this.onSimulationRecordStop_Handler.bind(this));
-		var h8 = this.Simulation.palette.On("Change", this.onSimulationPaletteChanged_Handler.bind(this));
+		var h6 = this.Simulation.palette.On("Change", this.onSimulationPaletteChanged_Handler.bind(this));
 		
-		this.Handle([h1, h2, h3, h4, h5, h6, h7]);
+		this.Handle([h1, h2, h3, h4, h5, h6]);
 		
 		this.BuildTooltip();
 	}
@@ -72,16 +67,6 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 		var s = this.Simulation;
 		
 		this.Widget.Draw(s.state, this.z, s.Palette, s.Selection);
-	}
-	
-	onSimulationRecordStart_Handler(ev) {
-		this.recorder.Start();	
-	}
-	
-	onSimulationRecordStop_Handler(ev) {	
-		this.recorder.Stop().then(function(ev) {
-			this.recorder.Download(this.simulation.name);
-		}.bind(this));	
 	}
 	
 	onMouseMove_Handler(ev) {

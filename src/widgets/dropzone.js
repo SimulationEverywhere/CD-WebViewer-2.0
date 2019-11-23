@@ -13,6 +13,7 @@ export default Lang.Templatable("Widget.Dropzone", class Dropzone extends Widget
 		this.files = null;
 		
 		this.Node("input").addEventListener("change", this.OnInput_Change.bind(this));
+		//console.log(this);
 	}
 	
 	Template() {
@@ -29,9 +30,9 @@ export default Lang.Templatable("Widget.Dropzone", class Dropzone extends Widget
 	
 	OnInput_Change(ev) {
 		if (ev.target.files.length == 0) return;
-				
+
 		this.files = Array.Map(ev.target.files, function(f) { 
-			return { name:f.name, raw:f };
+			return { name:f.name, content:null, raw:f };
 		});
 		
 		var css = ev.target.files.length > 0 ? "fas fa-thumbs-up" : "fas fa-exclamation-triangle";

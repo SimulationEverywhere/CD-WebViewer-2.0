@@ -8,9 +8,12 @@ import Widget from '../ui/widget.js';
 import Popup from '../ui/popup.js';
 import Dropzone from './dropzone.js';
 import Info from './info.js';
+import ModelList from './modelList.js';
 import Settings from './settings.js';
 import Palette from './palette.js';
 import Playback from './playback.js';
+import Simulation from '../simulation/simulation.js';
+
 
 const BG_NORMAL = "var(--color-5)";
 const BG_DISABLED = "var(--color-7)";
@@ -26,7 +29,6 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	constructor(node) {		
 		super(node);
 		
-		this.files = null;
 		this.config = null;
 		this.parser = null;
 		this.collapsed = false;
@@ -36,23 +38,41 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.Node("load").addEventListener("click", this.onLoadClick_Handler.bind(this));
 		this.Node("palette").addEventListener("click", this.onPaletteClick_Handler.bind(this));
 		this.Node("dropzone").On("Change", this.onDropzoneChange_Handler.bind(this));
+		this.Node("riseModel").addEventListener("click", this.onModelInputClick_Handler.bind(this));
+
+
+		// this.Node("modelList").On("dataReady", function(ev) {
+		// 	console.log(ev.data);
+		// 	this.parser.Parse().then((ev) => { this.LoadSimulation(ev.data); });
+		// });
 		
 		this.popup = new Popup();
 		
 		this.popup.Widget = new Palette();
+
+		this.popupRise = new Popup();
+		this.popupRise.Widget = new ModelList();
+		
+		this.popupRise.Widget.On("dataReady", this.onModelListClick_Handler.bind(this));
 		
 		this.popup.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
 	}
+
+	onModelInputClick_Handler(){ 
+		this.popupRise.Show();
+    }
 	
-	LoadSimulation(simulation) {
-		this.simulation = simulation;
+	LoadSimulation(data) {
+		this.simulation = new Simulation();
 		
 		this.simulation.On("Error", this.onError_Handler.bind(this));
+		
+		this.simulation.LoadData(this.Settings.Cache, data);
 		
 		this.popup.Widget.Initialize(this.simulation);
 		
 		this.Node("playback").Initialize(this.simulation, this.Settings);
-		this.Node("info").Initialize(this.simulation);	
+		this.Node("info").Initialize(this.simulation.info);	
 		
 		this.Node("load").disabled = false;
 		this.Node("dbSave").disabled = false;
@@ -75,7 +95,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	
 	onDropzoneChange_Handler(ev) {
 		this.Node("playback").Stop();
-		
+
 		var success = this.onParserDetected_Handler.bind(this);
 		var failure = this.onError_Handler.bind(this);
 		
@@ -83,16 +103,16 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	}
 	
 	onParserDetected_Handler(ev) {
-		this.parser = ev.result;
+		this.parser = ev.result.parser;
 		
-		this.files = this.Node("dropzone").files;
-		
-		var json = Array.Find(this.files, function(f) { return f.name.match(/.json/i); });
+		var fileList = this.Node("dropzone").files;
+		var name = `${this.parser.ModelName}.json`;
+		var file = Array.Find(fileList, function(f) { return f.name.match(name); });
 		
 		var success = this.onConfigParsed_Handler.bind(this);
 		var failure = this.onError_Handler.bind(this);
 		
-		Sim.ParseFile(json, (d) => { return JSON.parse(d); }).then(success, failure);
+		Sim.ReadFile(file, (d) => { return JSON.parse(d); }).then(success, failure);
 	}
 	
 	onConfigParsed_Handler(ev) {
@@ -110,7 +130,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		
 		this.Node("playback").Stop();
 		
-		this.parser.Parse(this.files, this.Settings).then((ev) => { this.LoadSimulation(ev.result); });
+		this.parser.Parse().then((ev) => { this.LoadSimulation(ev.result); });
 	}
 	
 	onParserProgress_Handler(ev) {
@@ -150,6 +170,34 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.SetCollapsed(config.collapsed);
 	}
 
+	onModelListClick_Handler(ev){
+		var fileList = ev.files;
+
+		// var modelArray = this.Array.from(ev.data);
+		// var listArray = ev.data.split(/\n|\r/g);
+		//var blobObject = new Blob([ev.results],{type: ev.results.type});
+		//var fileModel = new File([ev.results], ev.results.name,{type: ev.results.type, lastModified: ev.results.lastModifiedDate});
+		// this.LoadSimulation([blobObject]);
+
+		var success = this.onParserDetected_Handler.bind(this);
+		var failure = this.onError_Handler.bind(this);
+		
+		this.popupRise.Hide();
+
+		Sim.DetectParser(ev.result).then(success, failure);
+		
+
+		// this.LoadSimulation(ev.results);
+
+		// this.Node("load").disabled = true;
+		
+		// Dom.ToggleCss(this.Node("load"), "loading", true);
+		
+		// this.Node("playback").Stop();
+		
+		// this.parser.Parse().then((ev) => { this.LoadSimulation(ev.result); });
+	}
+
 	Template() {
 		return "<div class='control row'>" +
 				  "<div class='dash-box'>" +
@@ -161,8 +209,12 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 						  "<div handle='dropzone' class='dropzone' widget='Widget.Dropzone'></div>" +
 						  "<div handle='info' class='info' widget='Widget.Info'></div>" +
 						  "<div handle='settings' class='settings' widget='Widget.Settings'></div>" +
-						  "<img handle='palette' class='palette disabled' src='assets/swatch.png' title='nls(Control_PaletteEditor)' alt='nls(Control_PaletteEditor)'>" +
-					  "</div>" +
+						 '<div>' + 
+						    "<img handle='palette' class='palette disabled' src='assets/swatch.png' title='nls(Control_PaletteEditor)' alt='nls(Control_PaletteEditor)'>" +
+						    "<img handle='riseModel' class='rise' src='assets/cloud.png' title='nls(RISE_Server_Instructions)' alt='nls(RISE_Server_Instructions)'>" +
+						//   "<div handle='modelList' class='info info-label' widget='Widget.ModelList'></div>" +
+					     "</div>" +
+						"</div>" +
 					  
 					  "<div class='row row-2'>" +
 						  "<button handle='load' class='load' disabled>nls(Main_Load)</button>" +

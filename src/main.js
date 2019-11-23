@@ -12,12 +12,12 @@ import Session from './simulation/session.js';
 
 export default class Main extends Widget { 
 
-	constructor(node) {
+	constructor(node) {		
 		Lang.locale = "en";
 		Lang.nls = nls;
 		
 		super(node);
-				
+		
 		this.Node("control").On("Ready", this.onControlReady_Handler.bind(this));
 		this.Node("control").On("Save", this.onControlSave_Handler.bind(this));
 		
@@ -25,7 +25,7 @@ export default class Main extends Widget {
 		this.Node("dashboard").On("NewWidget", this.onDashboardNewWidget_Handler.bind(this));
 		this.Node("dashboard").Resize();
 	}
-		
+	
 	onControlReady_Handler(ev) {
 		Dom.RemoveCss(this.Node("dashboard").container, "hidden");
 		

@@ -35,6 +35,10 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 						"<span class='info-value' handle='nFrames'></span>" +
 					"</div>" + 
 					"<div class='info-line'>" +
+						"<span class='info-label'>nls(Info_Label_NumberTransitions)</span>" +
+						"<span class='info-value' handle='nTransitions'></span>" +
+					"</div>" + 
+					"<div class='info-line'>" +
 						"<span class='info-label'>nls(Info_Label_LastFrame)</span>" +
 						"<span class='info-value' handle='lastFrame'></span>" +
 					"</div>" + 
@@ -47,22 +51,24 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 		this.Node("files").innerHTML = "";
 		this.Node("dimensions").innerHTML = "";
 		this.Node("nFrames").innerHTML = "";
+		this.Node("nTransitions").innerHTML = "";
 		this.Node("lastFrame").innerHTML = "";
 		
 		Dom.ToggleCss(this.Node("content"), "hidden", true);
 		Dom.ToggleCss(this.Node("noFiles"), "hidden", false);
 	}
 	
-	Initialize(simulation) {
+	Initialize(info) {
 		Dom.ToggleCss(this.Node("noFiles"), "hidden", true);
 		Dom.ToggleCss(this.Node("content"), "hidden", false);
 		
-		this.UpdateLine("simulator", simulation.simulator);
-		this.UpdateLine("files", this.FilesAsString(simulation));
-		this.UpdateLine("name", simulation.name);
-		this.UpdateLine("dimensions", this.SizeAsString(simulation));
-		this.UpdateLine("nFrames", simulation.nFrames);
-		this.UpdateLine("lastFrame", simulation.lastFrame);
+		this.UpdateLine("simulator", info.Simulator);
+		this.UpdateLine("files", info.FilesAsString());
+		this.UpdateLine("name", info.Name);
+		this.UpdateLine("dimensions", info.SizeAsString());
+		this.UpdateLine("nFrames", info.NFrames);
+		this.UpdateLine("nTransitions", info.NTransitions);
+		this.UpdateLine("lastFrame", info.LastFrame);
 	}
 	
 	UpdateLine(id, value) {
@@ -74,16 +80,4 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 			this.Node(id).innerHTML = value;
 		}
 	}
-	
-	SizeAsString(simulation) {
-		if (!simulation.size) return null;
-	
-		return `${simulation.size.x}, ${simulation.size.y}, ${simulation.size.z}`;
-	}
-	
-	FilesAsString(simulation) {		
-		return simulation.files.map(f => f.name).join(", ");
-	}
-	
-	
 });

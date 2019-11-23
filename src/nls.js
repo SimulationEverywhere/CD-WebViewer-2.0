@@ -8,7 +8,7 @@ var nls = {
 		"en" : "<a href='http://vs3.sce.carleton.ca/wordpress/' target='_blank'>ARSLab</a>"
 	},
 	"Header_App" : {
-		"en" : "<a href='http://cell-devs.sce.carleton.ca/intranet/webviewer/' target='_blank'>Cell-DEVS Simulation Viewer</a>"
+		"en" : "<a href='http://cell-devs.sce.carleton.ca/intranet/webviewer/' target='_blank'>Cell-DEVS Simulate Viewer</a>"
 	},
 	"Header_Tutorial" : {
 		"en" : "&#128304; tutorials"
@@ -21,6 +21,9 @@ var nls = {
 	},
 	"Dropzone_Instructions" : {
 		"en":"Drag and drop<br>or<br>Click to browse"
+	},
+	"RISE_Server_Instructions" : {
+		"en":"Choose a pre-loaded model"
 	},
 	"Dropzone_Title" : {
 		"en":"Simulation files"
@@ -75,9 +78,6 @@ var nls = {
 	},
 	"Playback_Seek" : {
 		"en" : "Slide to seek frame"
-	},
-	"Playback_Record" : {
-		"en" : "Record simulation to .webm"
 	},
 	"Settings_Title" : {
 		"en" : "Settings"
@@ -213,9 +213,6 @@ var nls = {
 	},
 	"Configurator_Title" : {
 		"en" : "{0} Configuration"
-	},
-	"Main_Unsupported_Browser" : {
-		"en" : "This application is for the Chrome browser. It requires many features that are not supported by other browsers."
 	}
 }
 

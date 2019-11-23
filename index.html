@@ -30,16 +30,12 @@
 	</head>
 
 	<body>
-		<script>
-			var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
-			
-			if (!isChrome) alert("This application should be used with Chrome only.")
-		</script>
-		
 		<script type="module">
 			import Main from "./src/main.js";
 		
 			var main = new Main(document.body);
 		</script>
+
+		<script type="text/javascript" src="zip.js"></script>
 	</body>
 </html>

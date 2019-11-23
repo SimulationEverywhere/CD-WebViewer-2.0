@@ -3,191 +3,86 @@
 import Lang from '../../utils/lang.js';
 import Array from '../../utils/array.js';
 import Sim from '../../utils/sim.js';
+import Message from '../message.js';
 import Frame from '../frame.js';
-import State from '../state.js';
 import Parser from "./parser.js";
-import Palette from '../palettes/basic.js';
-import Simulation from '../simulation.js';
+import Palette from '../palette.js';
 import ChunkReader from '../../components/chunkReader.js';
 
 export default class CDpp extends Parser { 
 	
-	constructor(files) {
-		super(files);
+	get Type() { return "CD++"; }
+	
+	get ModelName() { 
+		var i = this.files.log.raw.name.lastIndexOf(".");
 		
-		this.val = new Frame("val", [0,0,0,0]);
-		this.ma = new Frame("ma", [0,0,0,0]);
+		return this.files.log.raw.name.substr(0, i); 
 	}
 	
-	IsValid() {
-		var d = Lang.Defer();
-		var log = Array.Find(this.files, function(f) { return f.name.match(/.log/i); });
-		
-		if (!log) d.Resolve(false);
-			
-		var r = new ChunkReader();
-		
-		r.ReadChunk(log.raw, 200).then((ev) => d.Resolve(ev.result.indexOf("Mensaje ") >= 0));
-		
-		return d.promise;
+	constructor(fileList) {
+		super(fileList);
 	}
 	
-	Parse(files, settings) {
-		var d = Lang.Defer();
-		var simulation = new Simulation();
-		
-		var val = Array.Find(files, function(f) { return f.name.match(/.val/i); });
-		var pal = Array.Find(files, function(f) { return f.name.match(/.pal/i); });
-		var ma = Array.Find(files, function(f) { return f.name.match(/.ma/i); });
-		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
-		
-		var p1 = Sim.ParseFile(val, this.ParseValFile.bind(this, simulation));
-		var p2 = Sim.ParseFile(pal, this.ParsePalFile.bind(this, simulation));
-		var p3 = Sim.ParseFile(ma, this.ParseMaFile.bind(this, simulation));
-		var p4 = Sim.ParseFileByChunk(log, this.ParseLogChunk.bind(this, simulation));
-			
-		var defs = [p1, p2, p3, p4];
+	GetFiles (fileList) {		
+		return {
+			log : Array.Find(fileList, function(f) { return f.name.match(".log"); }),
+			val : Array.Find(fileList, function(f) { return f.name.match(".val"); }),
+			pal : Array.Find(fileList, function(f) { return f.name.match(".pal"); })
+		}
+	}
 	
-		Promise.all(defs).then((data) => {
-			var f = this.MergeFrames(this.ma, this.val);
-			
-			if (f.transitions.length > 0) {
-				f.id = "00:00:00:000";
-				simulation.frames.unshift(f);
-				simulation.index[f.id] = f;
-			}
-			
-			var info = {
-				simulator : "CD++",
-				name : log.name.replace(/\.[^.]*$/, ''),
-				files : files,
-				lastFrame : simulation.LastFrame().id,
-				nFrames : simulation.frames.length
-			}
-			
-			simulation.Initialize(info, settings);
+	IsValid() {		
+		var d = Lang.Defer();
 		
-			d.Resolve(simulation);
+		if (!this.files.log) d.Reject(new Error(`CD++ Parser is not valid for the selected files.` ));
+			
+		var reader = new ChunkReader();
+		
+		reader.ReadChunk(this.files.log.raw, 200).then((ev) => {
+			var isValid = ev.result.indexOf("Mensaje ") >= 0;
+			
+			if (isValid) d.Resolve(this);
+			
+			d.Reject(new Error(`CD++ Parser is not valid for the selected files.`));
 		});
 		
 		return d.promise;
 	}
 	
-	MergeFrames(f1, f2) {
-		// f2 over f1, modifies f1, who cares.
-		f2.transitions.forEach(function(t2) {
-			// frame 1 has transition id from frame 2, replace
-			if (f1.index[t2.id])  {
-				f1.index[t2.id].value = t2.value;
-				f1.index[t2.id].diff = t2.diff;
-			}
-			
-			// frame 1 doesn't have transition id from frame 2, add it
-			else f1.AddTransition(t2.coord, t2.value, t2.diff);
+	ParseTasks() {		
+		var defs = [];
+		
+		if (this.files.val) defs.push(Sim.ReadFile(this.files.val, this.ParseValFile));
+		if (this.files.pal) defs.push(Sim.ReadFile(this.files.pal, this.ParsePalFile));
+		
+		defs.push(this.ParseLogFile());
+		
+		return defs;
+	}
+	
+	GetPalette() {
+		var palette = new Palette(this.files.pal.raw.name);
+		
+		Array.ForEach(this.files.pal.content, function(d) {
+			palette.AddClass(d.start, d.end, d.color);
 		});
 		
-		return f1;
+		return palette;
 	}
 	
-	ParseValFile(simulation, file) {
-		// Each line looks like this: (y,x,z)=value
-		file.split(/\n/).forEach(function(line) {
-			if (line.length < 4) return; // probably empty line
-			
-			var cI = line.indexOf('('); // coordinate start
-			var cJ = line.indexOf(')'); // coordinate end
-			var vI = line.indexOf('='); // value start
-			
-			if (cI == -1|| cJ == -1 || vI == -1) return; // invalid line
-			
-			var v = parseFloat(line.substr(vI + 1));
-			
-			// 2D or 3D?
-			var split = line.substring(cI + 1, cJ).split(',');
-						
-			var y = parseInt(split[0], 10); // Y coord
-			var x = parseInt(split[1], 10); // X coord
-			var z = parseInt(split.length == 3 ? split[2] : 0, 10); // Z coord
-
-			this.val.AddTransition({ x:x++, y:y++, z:z++ }, v);
-		}.bind(this));
+	GetMessages() {
+		var messages = [];
+		
+		if (this.files.val) messages = messages.concat(this.files.val.content);
+		
+		return messages.concat(this.files.log.content);
 	}
 	
-	ParseMaFile(simulation, file) {
-		// Dimensions		
-		var dim = null;
-		var raw = file.match(/dim\s*:\s*\((.+)\)/);
+	ParsePalFile(f) {	
+		var data = [];
 		
-		if (raw) dim = raw[1].split(",")
-		
-		else {
-			var raw_h = file.match(/height\s*:\s*(.+)/);
-			var raw_w = file.match(/width\s*:\s*(.+)/);
-			
-			dim = [raw_h[1], raw_w[1]];
-		}
-			
-		if (dim.length == 2) dim.push(1);
-		
-		simulation.size = { x:+dim[1], y:+dim[0], z:+dim[2] };
-		
-		var global = this.GlobalFrame(simulation, file);
-		var rows = this.RowsFrame(file);
-		
-		this.ma = this.MergeFrames(global, rows);
-	}
-	
-	GlobalFrame(simulation, file) {
-		var f = new Frame("global", [0,0,0,0]);
-		var raw = file.match(/initialvalue\s*:\s*(.+)/);
-		
-		if (!raw || raw[1] == "0") return f;
-		
-		for (var x = 0; x < simulation.size.x; x++) { 
-			for (var y = 0; y < simulation.size.y; y++) { 
-				for (var z= 0; z < simulation.size.z; z++) { 
-					f.AddTransition({ x:x, y:y, z:z }, +raw[1]);
-				}
-			}
-		}
-		
-		return f;
-	}
-	
-	RowsFrame(file) {
-		var f = new Frame("rows", [0,0,0,0]);
-		var raw = file.matchAll(/initialrowvalue\s*:\s*(.+)/g);
-		
-		if (!raw) return f;
-		
-		for (const r of raw) {
-			var d = r[1].split(/\s+/);
-			var values = d[1].split('');
-			
-			for (var x = 0; x < values.length; x++) {
-				var v = +values[x];
-				
-				if (v == 0) continue;
-				
-				f.AddTransition({ x:+x, y:+d[0], z:0 }, v);
-			}
-		}
-		
-		return f;
-	}
-	
-	ParsePalFile(simulation, file) {	
-		var lines = file.split(/\n/);
-		simulation.palette = new Palette();
-		
-		if (lines[0].indexOf('[') != -1) this.ParsePalTypeA(simulation.palette, lines);
-			
-		else this.ParsePalTypeB(simulation.palette, lines);
-	}	
-	
-	ParsePalTypeA(palette, lines) {
 		// Type A: [rangeBegin;rangeEnd] R G B
-		lines.forEach(function(line) { 
+		Array.ForEach(f.split(/\n/), function(line) { 
 			// skip it it's probably an empty line
 			if (line.length < 7) return;
 			
@@ -205,43 +100,77 @@ export default class CDpp extends Parser {
 			var g = parseInt(rgb[1], 10);
 			var b = parseInt(rgb[2], 10);
 			
-			palette.AddClass(begin, end, [r, g, b]);
+			data.push({ start:begin, end:end, color:[r, g, b] });
 		});
+		
+		return data;
+	}	
+	
+	ParseValFile(f) {				
+		var x, y, z;
+		var data = [];
+		
+		// Each line looks like this: (y,x,z)=value
+		Array.ForEach(f.split(/\n/), function(line) {
+			if (line.length < 4) return; // probably empty line
+			
+			var cI = line.indexOf('('); // coordinate start
+			var cJ = line.indexOf(')'); // coordinate end
+			var vI = line.indexOf('='); // value start
+			
+			if (cI == -1|| cJ == -1 || vI == -1) return; // invalid line
+			
+			// Parse value
+			var v = parseFloat(line.substr(vI + 1));
+			
+			// 2D or 3D?
+			var split = line.substring(cI + 1, cJ).split(',');
+						
+			y = parseInt(split[0], 10); // Y coord
+			x = parseInt(split[1], 10); // X coord
+			z = parseInt(split.length == 3 ? split[2] : 0, 10); // Z coord
+
+			data.push(new Message("00:00:00:000", [0,0,0,0], { x:x++, y:y++, z:z++ }, v)); 
+		});
+		
+		return data;
 	}
 	
-	ParsePalTypeB(palette, lines) {
-		// Type B (VALIDSAVEFILE: lists R,G,B then lists ranges)
-		var paletteRanges = [];
-		var paletteColors =[];
+	ParseLogFile() {
+		this.files.log.content = [];
 		
-		for (var i = lines.length; i-->0;){
-			// check number of components per line
-			var components = lines[i].split(',');
+		var d = Lang.Defer();
+		var reader = new ChunkReader();
+		
+		this.ParseChunks(reader, this.files.log, d);
+		
+		return d.promise;
+	}
+	
+	ParseChunks(reader, log, defer) {
+		reader.ReadChunk(log.raw).then((ev) => {
+			var idx = ev.result.lastIndexOf('\n');
+			var chunk = ev.result.substr(0, idx);
+			var messages = this.ParseSafeChunk(chunk);
 			
-			if(components.length == 2) {
-			// this line is a value range [start, end]
-				// Use parseFloat to ensure we're processing in decimal not oct
-				paletteRanges.push([parseFloat(components[0]), parseFloat(components[1])]); 
-			}
-			else if (components.length == 3){ 
-				//this line is a palette element [R,G,B]
-				// Use parseInt(#, 10) to ensure we're processing in decimal not oct
-				paletteColors.push([parseInt(.95*parseInt(components[0],10)), 
-									parseInt(.95*parseInt(components[1],10)), 
-									parseInt(.95*parseInt(components[2],10))]); 
-			}
-		}
+			log.content = log.content.concat(messages);
 
-		// populate grid palette object
-		for (var i = paletteRanges.length; i-- > 0;){
-			palette.AddClass(paletteRanges[i][0], paletteRanges[i][1], paletteColors[i]);
-		}
+			reader.MoveCursor(chunk.length + 1);
+			
+			this.Emit("Progress", { progress: 100 * reader.position / log.raw.size });
+			
+			if (reader.position < log.raw.size) this.ParseChunks(reader, log, defer);
+			
+			else if (reader.position == log.raw.size) defer.Resolve(log.content);
+			
+			else throw new Error("Reader position exceeded the file size.");
+		});
 	}
 		
-	ParseLogChunk(simulation, chunk, progress) {
+	ParseSafeChunk(chunk) {
 		var lines = [];
 		var start = chunk.indexOf('Mensaje Y', 0);
-			
+							
 		while (start > -1 && start < chunk.length) {			
 			var end = chunk.indexOf('\n', start);
 			
@@ -253,6 +182,8 @@ export default class CDpp extends Parser {
 
 			var start = chunk.indexOf('Mensaje Y', start + length);
 		}
+		
+		var safe = [];
 		
 		Array.ForEach(lines, function(line) {
 			var split = line.split("/");
@@ -275,11 +206,9 @@ export default class CDpp extends Parser {
 			
 			var time = Array.Map(idx.split(":"), function(t) { return +t; });
 			
-			var f = simulation.Index(idx) || simulation.AddFrame(idx, time);
-			
-			f.AddTransition(coord, v);
+			safe.push(new Message(idx, time, coord, v));
 		});
-		
-		this.Emit("Progress", { progress: progress });
+
+		return safe;
 	}
 }
