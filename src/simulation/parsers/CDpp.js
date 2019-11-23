@@ -27,7 +27,7 @@ export default class CDpp extends Parser {
 			
 		var r = new ChunkReader();
 		
-		r.ReadChunk(log.raw, 200).then((ev) => d.Resolve(ev.result.indexOf("Mensaje ") >= 0));
+		r.ReadChunk(log, 200).then((ev) => d.Resolve(ev.result.indexOf("Mensaje ") >= 0));
 		
 		return d.promise;
 	}

@@ -2,6 +2,7 @@
 
 import nls from './nls.js';
 import Lang from './utils/lang.js';
+import Net from './utils/net.js';
 import Array from './utils/array.js';
 import Dom from './utils/dom.js';
 import Widget from './ui/widget.js';
@@ -60,7 +61,7 @@ export default class Main extends Widget {
 	}
 	
 	onControlSave_Handler() {
-		Lang.Download(this.simulation.Info.Name + ".json", this.session.Save());
+		Net.Download(this.simulation.Info.Name + ".json", this.session.Save());
 	}
 	
 	SetWidgetInCell(cell, definition, configuration) {

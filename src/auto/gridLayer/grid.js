@@ -12,8 +12,8 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 
 	get Canvas() { return this.Node("canvas"); }
 	
-	constructor() {
-		super();
+	constructor(node) {
+		super(node);
 
 		this.dimensions = null;
 		this.cell = null;

@@ -36,20 +36,6 @@ export default class Lang {
 		return arguments[0];
 	}
 
-	static GetUrlParameter (name) {				
-		name = name.replace(/[\[\]]/g, '\\$&');
-		
-		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-		
-		results = regex.exec(window.location.href);
-		
-		if (!results) return null;
-		
-		if (!results[2]) return '';
-		
-		return decodeURIComponent(results[2].replace(/\+/g, ' '));
-	}
-
 	// debouncing function from John Hann, slightly modified 
 	// http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
 	static Debounce(func, threshold) {
@@ -114,12 +100,6 @@ export default class Lang {
 		return widgets;
 	}
 	
-	static Download(name, content) {
-		var link = document.createElement("a");
-		
-		link.href = "data:application/octet-stream," + encodeURIComponent(content);
-		link.download = name;
-		link.click();
-		link = null;
-	}
+	
+	static Get() {}
 }

@@ -35,7 +35,7 @@ export default class Sim {
 		
 		if (!file) d.Resolve(null);
 		
-		else r.Read(file.raw).then(function(ev) {
+		else r.Read(file).then(function(ev) {
 			var content = parser(ev.result);
 			
 			d.Resolve(content);
@@ -55,17 +55,17 @@ export default class Sim {
 		return d.promise;
 		
 		function ParseFileChunk() {
-			reader.ReadChunk(file.raw).then((ev) => {
+			reader.ReadChunk(file).then((ev) => {
 				var idx = ev.result.lastIndexOf('\n');
 				var content = ev.result.substr(0, idx);
 				
 				reader.MoveCursor(content.length + 1);
 				
-				parser(content, 100 * reader.position / file.raw.size);
+				parser(content, 100 * reader.position / file.size);
 				
-				if (reader.position < file.raw.size) ParseFileChunk();
+				if (reader.position < file.size) ParseFileChunk();
 				
-				else if (reader.position == file.raw.size) d.Resolve(content);
+				else if (reader.position == file.size) d.Resolve(content);
 				
 				else throw new Error("Reader position exceeded the file size.");
 			});
@@ -80,5 +80,32 @@ export default class Sim {
 		var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		
 		return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
+	}
+	
+	static ReadZipRISE(content, idx) {
+		var d = Lang.Defer();
+		var blobZip = new Blob([content], { type : "application/zip" });
+		
+		zip.createReader(new zip.BlobReader(blobZip), function(reader) {
+			reader.getEntries(function(entries) {
+				entries[idx].getData(new zip.TextWriter(), function(text){
+					var blobTxt = new Blob([text], { type: "text/plain" });
+
+					var file = new File([blobTxt], entries[idx].filename);
+
+					// reader.close(function(){  });
+					reader.close();
+					
+					d.Resolve(file);
+			   }/*,
+			   function(current,total){
+				   //progress callback
+			   }*/);
+		   });
+		}, function(error){
+			d.Reject(error);
+		});
+		
+		return d.promise;
 	}
 }
