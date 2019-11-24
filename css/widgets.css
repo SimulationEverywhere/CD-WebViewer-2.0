@@ -469,7 +469,7 @@ img.palette {
 	margin-left : 10px;
 }
 
-
+/* TODO: Review CSS for rise list widget */
 .rise {
 	cursor: pointer;
     height: 28px;
