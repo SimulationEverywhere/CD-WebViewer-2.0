@@ -97,6 +97,9 @@ var nls = {
 	"Control_PaletteEditor" : {
 		"en" : "Palette editor"
 	},	
+	"Control_RiseList" : {
+		"en":"Load model from RISE"
+	},
 	"Palette_Title" : {
 		"en" : "Palette editor:"
 	},
