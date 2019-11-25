@@ -53,9 +53,11 @@ export default class Simulation extends Evented {
 		this.LoadModels(data.models);
 		this.LoadInfo(data.parser);
 		this.selection = new Selection();
+		var model_clone = JSON.parse(JSON.stringify(this.models));
 		this.cache = new Cache();
 		
 		this.cache.Build(nCache, this.frames, this.models);
+		this.models = model_clone;
 		
 		this.state = this.cache.First();
 		

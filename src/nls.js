@@ -49,6 +49,12 @@ var nls = {
 	"Info_Label_NumberFrames" : {
 		"en" : "Number of frames:"
 	},
+	"Info_Label_NumberTransitions" : {
+		"en" : "Number of transitions:"
+	},
+	"Info_Label_LastFrame" : {
+		"en" : "Last frame:"
+	},
 	"Widget_AutoDevsDiagram" : {
 		"en" : "DEVS Diagram"		
 	},
@@ -66,12 +72,6 @@ var nls = {
 	},
 	"SVG_Title" : {
 		"en":"SVG files"
-	},
-	"Info_Label_NumberTransitions" : {
-		"en" : "Number of transitions:"
-	},
-	"Info_Label_LastFrame" : {
-		"en" : "Last frame:"
 	},
 	"Playback_FastBackward" : {
 		"en" : "Go to first frame"

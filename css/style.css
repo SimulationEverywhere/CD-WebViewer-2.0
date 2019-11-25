@@ -107,8 +107,7 @@ input[type=number] {
 input, select {
     border-radius: 4px;
     border: none;
-    font-size: 1.1em;
-	
+    font-size: 1.1em;	
     line-height: 23px;
     height: 23px;
     padding: 2px;
@@ -226,3 +225,50 @@ button.collapse {
 	width:12px;
 	height:2px;
 }
+
+.theme-selector{
+    position: relative;
+    display: inline-block;
+}
+
+.theme-btn{
+    border: none;
+    cursor: pointer;
+}
+
+.themes {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--color-5);
+    width: 150%;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    line-height: 1.2;
+    border-radius: 4px;
+    border: none;
+  }
+
+  .themes span {
+    color: var(--color-4);
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--f-body);
+    font-size: 9.5pt;
+    text-shadow: 0px 1px 1px rgba(50, 50, 50, 1);
+    display: block;
+  }
+
+  .themes span:hover {
+      background-color: var(--color-1);
+  }
+
+  .show {
+      display: block;
+  }
+
+  .theme-selector:hover .themes {
+    display: block;
+  }

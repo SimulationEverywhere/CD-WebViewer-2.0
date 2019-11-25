@@ -47,7 +47,6 @@ export default class State {
 		for (var id in model) {
 			model[id] = 0;
 		}
-
 			
 		return new State(-1, model);
 	}

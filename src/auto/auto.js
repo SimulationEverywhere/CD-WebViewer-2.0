@@ -10,7 +10,6 @@ import StateSum from './stateSum/auto.js';
 import StateSumConfig from './stateSum/config.js';
 import TransitionMap from './transitionMap/auto.js';
 import TransitionMapConfig from './transitionMap/config.js';
-import Simulation from '../simulation/simulation.js';
 import DevsDiagram from './devsDiagram/auto.js';
 import DevsDiagramConfig from './devsDiagram/config.js';
 
@@ -57,6 +56,7 @@ let AUTOS = [{
 		definition : DevsDiagram,
 		configurator : DevsDiagramConfig
 	}];
+
 
 export default class Auto { 
 

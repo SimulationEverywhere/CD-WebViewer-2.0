@@ -10,7 +10,7 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	constructor(file) {
 		super();
 		this.dimensions = null;
-		this.cell = null;
+		this.fill = null;
 		this.svgcontent="";
 		this.svgcontent=file;
 
@@ -41,16 +41,25 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	
 
 	}
-	DrawSVGBorder(selected_id,color) {
-		// Find the new X, Y coordinates of the clicked cell
-	//	console.log(selected_id);
-		if(selected_id!="")
-		{	
-
-			document.getElementById(selected_id).style.stroke = color;
-			document.getElementById(selected_id).style['stroke-width']=5.0;
-		}
+	Update(state,selection) {
+		this.DrawChanges(state,selection);
 	}
+
+	DrawSVGBorder(selection,color) {
+	
+	
+	var selected_id = selection.selected;
+	//console.log(selected_id);
+	for (var i = 0; i < selected_id.length; i++) {
+		if(document.getElementById(selected_id[i])!=null)
+			{	
+   	document.getElementById(selected_id[i]).style.stroke = color;
+   	document.getElementById(selected_id[i]).style['stroke-width']=2.0;
+   }
+	}
+		
+	}
+
 	Template() {
 
 			   		return "<div class='grid'>" + 
@@ -62,44 +71,27 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 			   "</div>";
 	}
 
-	Resize(dimensions) {
-
-		
-		if(Array.isArray(dimensions))
-		{
+	Resize() {
 
 
-		this.dimensions = dimensions;
 		this.size = Dom.Geometry(this.Node("diagram-container"));
-		
-		var pH = (this.dimensions.x) ;
-		var pV = (this.dimensions.y);
-		
-		this.Node("diagram").style.margin = `${pV}px ${pH}px`;		
-		// Redefine with and height to fit with number of cells and cell size
-		this.Node("diagram").style.width =   `${(this.size.w - (this.dimensions.x ))}px`;	
-		this.Node("diagram").style.height =  `${(this.size.h - (this.dimensions.y ))}px`  ;
-		}
-	else
-
-	{this.size = Dom.Geometry(this.Node("diagram-container"));
 		var pH = 30 ;
 		var pV = 30;
 		this.Node("diagram").style.margin = `${pV}px ${pH}px`;
-	this.Node("diagram").style.width =   `${(this.size.w - (30))}px`;	
+		this.Node("diagram").style.width =   `${(this.size.w - (30))}px`;	
 		this.Node("diagram").style.height =  `${(this.size.h - (30))}px`  ;
 			
-	}
+	
 	}
 	
-	Draw(state) {
+	Draw(state,selection) {
 		
-			this.DrawState(state);
+			this.DrawState(state,selection);
 	
 	//	else this.Default(DEFAULT_COLOR);
 	}
 
-	DrawState(state)
+	DrawState(state,selection)
 	{		this.Node('diagram_hidden').innerHTML = this.svgcontent;
 			this.Node("diagram_hidden").getElementsByTagName("svg")[0].setAttribute("width", "100%");
 			this.Node("diagram_hidden").getElementsByTagName("svg")[0].setAttribute("height", "100%");
@@ -108,52 +100,42 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 			this.Node("diagram_hidden").getElementsByTagName("title").hidden = true;
 			
 			this.Node('diagram').innerHTML =this.Node('diagram_hidden').innerHTML;
-	
-}
-DrawChanges(state)
-{	//TO DRAW INITIAL STATE AFTER SHOWING THE CHANGES .
-	this.DrawState(state);
-
-// 		if(frame!=undefined)
- //		{
- 	// 		Array.ForEach(frame.transitions, function(t) {
- 	 //		
-		//	var t_id =t.id;
-		//	var v = state.model[t_id];
-			
-		//	const fill = 'salmon';
-		//	if(document.getElementById(t_id)!=null)
-		//	document.getElementById(t_id).style.fill=fill;
-			
-
-		//}.bind(this));
-	//	}
-	//	
-	//	else
-	//	{	
-			//var time =this.data.times[state.i];
+			this.DrawSVGBorder(selection,'red');
+	}
+	DrawChanges(state,selection)
+	{	
+			//console.log(selection.selected);
 			var transitions =this.data.transitions[state.i];
+			//console.log(transitions);
 			
-
+			this.Reset(state);
 			Array.ForEach(transitions, function(t) {
- 	 		
+ 	 		//console.log(state.model);
  	 		const fill = 'LightSeaGreen';
 			var t_id =t.id;
-			if(document.getElementById(t_id)!=null)
-			{document.getElementById(t_id).style.fill=fill;
-				const fillstroke = 'teal';
-
-			 document.getElementById(t_id).style.stroke = fillstroke;
-			document.getElementById(t_id).style['stroke-width']=5.0;
-
-			}
-				
-			}.bind(this));
 			
-
-	//	}
-
-}
+			if(document.getElementById(t_id)!=null)
+			{	
+				document.getElementById(t_id).style.fill=fill;
+			
+			}
+			
+			}.bind(this));
+			this.DrawSVGBorder(selection,'red');
+		}
+	Reset(state)
+	{
+		//console.log(Object.keys(state.model));
+		var selected_id = Object.keys(state.model);
+	//console.log(selected_id);
+	for (var i = 0; i < selected_id.length; i++) {
+		if(document.getElementById(selected_id[i])!=null)
+			{	
+   	document.getElementById(selected_id[i]).style.fill = 'white';
+ //  	document.getElementById(selected_id[i]).style['stroke-width']=2.0;
+   }
+	}
+	}
 
 	Data(data) {
 		this.data = data;

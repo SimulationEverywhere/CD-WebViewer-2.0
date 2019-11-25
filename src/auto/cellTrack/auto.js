@@ -10,7 +10,6 @@ import Automated from '../automated.js';
 export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart extends Automated { 
 	
 	constructor(config, simulation) {
-	
 		super(new CellTrackChart(), simulation);
 		
 		this.selected = [];
@@ -98,7 +97,6 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		}.bind(this));
 		
 		this.Widget.Data(data);
-		//console.log(data);
 	}
 
 	// TODO: This can be made more efficient by applying only the transitions

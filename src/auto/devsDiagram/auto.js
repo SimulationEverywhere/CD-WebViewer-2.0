@@ -44,18 +44,21 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 	Refresh() {
 		this.Resize();
 		this.Draw();
+		this.Update();
 	}
 
 	Resize() {
-		this.Widget.Resize(this.Simulation.Size);
+		this.Widget.Resize();
 	}
 	
 	Draw() {
 		var s = this.Simulation;
 		
-		this.Widget.Draw(s.state);
+		this.Widget.Draw(s.state,s.selection);
 	}
-
+	Update() {
+		this.Widget.Update(this.Simulation.state,this.Simulation.selection);
+	}
 	Data(selected, frames) {
 		var data = {
 			type : this.type,
@@ -86,17 +89,20 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 	}
 
 	onSimulationMove_Handler(ev) {
-	var s = this.Simulation;
-	
-		this.Widget.DrawChanges(s.state);
+	//var s = this.Simulation;
+	this.Update();
+	//	this.Widget.DrawChanges(s.state);
 	}
 	
 	onSelectionChange_Handler(ev) {
-	
-		var s = this.Simulation;
+		this.UpdateSelected();
+	//	this.BuildTooltip();
+		this.Data();
+		this.Refresh();
+			//var s = this.Simulation;
 		//this.Widget.DrawChanges(s.state,s.frames,this.selected);  //both works same, no event at this selection
 		//this.Widget.DrawChanges(s.state,ev.frame,this.selected);
-			this.Widget.DrawChanges(s.state);
+		//	this.Widget.DrawChanges(s.state);
 	}
 	
 	UpdateSelected() {
@@ -109,35 +115,42 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 
 	
 	onMouseMove_Handler(ev) {
-	var s = this.Simulation;
+		var s = this.Simulation;
 		var subs = [ev.data2,s.state.model[ev.data2]];
 		
 		this.tooltip.nodes.label.innerHTML = Lang.Nls("Widget_DEVS_Tooltip_Title", subs);
 	
 		this.tooltip.Show(ev.x + 20, ev.y);
+		
 	}
 	
-
-	onClick_Handler(ev) {
-	
-		var id = [ev.selectedid];
-		
-		//var isSelected = this.Simulation.Selection.IsSelected(id);
-		//console.log(isSelected);
-		//if (!isSelected) {
-			var fillstroke = 'red';
-			this.Widget.DrawSVGBorder(id,fillstroke);
-		//} 
-		
-
-		
-		
-	
-	}
-
 	onMouseOut_Handler(ev) {
 		this.tooltip.Hide();
 	}
+	
+	onClick_Handler(ev) {
+		var s = this.Simulation;
+		var id=ev.selectedid;
+		//var state_id = s.state.model[ev.selectedid];
+		
+		var isSelected = this.Simulation.Selection.IsSelected(id);		
+	//console.log(state_id);
+	//	console.log(s.state);
+		if (!isSelected) {
+			this.Simulation.Selection.Select(id);
+			var fillstroke = 'red';
+		} 
+		
+		else {
+		//	var fillstroke = 'black';
+			this.Simulation.Selection.Deselect(id);
+
+		}
+			
+			this.Widget.DrawSVGBorder(s.Selection,fillstroke);
+	}
+
+	
 	
 	
 

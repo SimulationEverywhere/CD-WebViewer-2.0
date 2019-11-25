@@ -73,7 +73,7 @@ export default class Main extends Widget {
 	
 	Template() {
 		return	"<div class='main'>" +
-					"<div id='header' class='header row' widget='Widget.Header'></div>" +
+					"<div handle='header' class='header row' widget='Widget.Header'></div>" +
 					"<div handle='control' class='control row' widget='Widget.Control'></div>" +
 					"<div handle='dashboard' class='dashboard hidden' widget='UI.Dashboard'></div>" +
 				"</div>";
