@@ -1,15 +1,15 @@
 'use strict';
 
-import nls from '/DEV/CD-WebViewer-2.0/src/nls.js';
-import Lang from '/DEV/CD-WebViewer-2.0/src/utils/lang.js';
-import Net from '/DEV/CD-WebViewer-2.0/src/utils/net.js';
-import Sim from '/DEV/CD-WebViewer-2.0/src/utils/sim.js';
-import Array from '/DEV/CD-WebViewer-2.0/src/utils/array.js';
-import Dom from '/DEV/CD-WebViewer-2.0/src/utils/dom.js';
-import Widget from '/DEV/CD-WebViewer-2.0/src/ui/widget.js';
-import Playback from '/DEV/CD-WebViewer-2.0/src/widgets/playback.js';
-import AutoGrid from '/DEV/CD-WebViewer-2.0/src/auto/gridLayer/auto.js';
-import Settings from '/DEV/CD-WebViewer-2.0/src/simulation/settings.js';
+import nls from '/CD-WebViewer-2.0/src/nls.js';
+import Lang from '/CD-WebViewer-2.0/src/utils/lang.js';
+import Net from '/CD-WebViewer-2.0/src/utils/net.js';
+import Sim from '/CD-WebViewer-2.0/src/utils/sim.js';
+import Array from '/CD-WebViewer-2.0/src/utils/array.js';
+import Dom from '/CD-WebViewer-2.0/src/utils/dom.js';
+import Widget from '/CD-WebViewer-2.0/src/ui/widget.js';
+import Playback from '/CD-WebViewer-2.0/src/widgets/playback.js';
+import AutoGrid from '/CD-WebViewer-2.0/src/auto/gridLayer/auto.js';
+import Settings from '/CD-WebViewer-2.0/src/simulation/settings.js';
 
 export default class Main extends Widget { 
 
@@ -17,7 +17,7 @@ export default class Main extends Widget {
 		Lang.locale = "en";
 		Lang.nls = nls;
 		
-		zip.workerScriptsPath = "/DEV/CD-WebViewer-2.0/references/zip/"
+		zip.workerScriptsPath = "/CD-WebViewer-2.0/references/zip/"
 		
 		super(node);
 		
