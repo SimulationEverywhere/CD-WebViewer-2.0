@@ -81,4 +81,31 @@ export default class Sim {
 		
 		return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
 	}
+	
+	static ReadZipRISE(content, idx) {
+		var d = Lang.Defer();
+		var blobZip = new Blob([content], { type : "application/zip" });
+		
+		zip.createReader(new zip.BlobReader(blobZip), function(reader) {
+			reader.getEntries(function(entries) {
+				entries[idx].getData(new zip.TextWriter(), function(text){
+					var blobTxt = new Blob([text], { type: "text/plain" });
+
+					var file = new File([blobTxt], entries[idx].filename);
+
+					// reader.close(function(){  });
+					reader.close();
+					
+					d.Resolve(file);
+			   }/*,
+			   function(current,total){
+				   //progress callback
+			   }*/);
+		   });
+		}, function(error){
+			d.Reject(error);
+		});
+		
+		return d.promise;
+	}
 }
