@@ -31,7 +31,7 @@ export default class Main extends Widget {
 		var json = Net.GetUrlParameter("config");
 		var config = JSON.parse(json);
 		// var url = `http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces/test/dcdpp/${config.model}/results.zip`;
-		var url = `http://localhost/Dev/cd-webviewer-embeddable/results.zip`;
+		var url = `https://simulationeverywhere.github.io/CD-WebViewer-2.0/embeddable/results.zip`;
 
 		var p = Net.Request(url, null, 'blob')
 		
