@@ -26,7 +26,7 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 		var h7 = this.Simulation.On("RecordStop", this.onSimulationRecordStop_Handler.bind(this));
 		var h8 = this.Simulation.palette.On("Change", this.onSimulationPaletteChanged_Handler.bind(this));
 		
-		this.Handle([h1, h2, h3, h4, h5, h6, h7]);
+		this.Handle([h1, h2, h3, h4, h5, h6, h7, h8]);
 		
 		this.BuildTooltip();
 	}
@@ -47,7 +47,12 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 	}
 	
 	Resize() {
-		this.Widget.Resize(this.Simulation.Size);
+		var size = this.Simulation.size;
+		
+		size = Array.Map(size, function(s) { return (+s); });
+		size = { x:size[0], y:size[1], z:size[2] };
+		
+		this.Widget.Resize(size);
 	}
 	
 	Draw() {
@@ -85,7 +90,8 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 	}
 	
 	onMouseMove_Handler(ev) {
-		var state = this.simulation.state.GetValue(ev.data.x, ev.data.y, this.z);
+		var id = ev.data.x + "-" + ev.data.y + "-" + this.z;
+		var state = this.simulation.state.models[id];
 		var subs = [ev.data.x, ev.data.y, this.z, state];
 		
 		this.tooltip.nodes.label.innerHTML = Lang.Nls("Widget_AutoGrid_Tooltip_Title", subs);
@@ -98,18 +104,19 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 	}
 	
 	onClick_Handler(ev) {
-		var isSelected = this.Simulation.Selection.IsSelected(ev.data.x, ev.data.y, this.z);		
+		var id = ev.data.x + "-" + ev.data.y + "-" + this.z;
+		var isSelected = this.Simulation.Selection.IsSelected(id);		
 		
 		if (!isSelected) {
-			this.Simulation.Selection.Select(ev.data.x, ev.data.y, this.z);
+			this.Simulation.Selection.Select(id);
 			
 			var color = this.Simulation.Palette.SelectedColor;
 		} 
 		
 		else {
-			this.Simulation.Selection.Deselect(ev.data.x, ev.data.y, this.z);
-			
-			var v = this.Simulation.State.GetValue(ev.data.x, ev.data.y, this.z);
+			this.Simulation.Selection.Deselect(id);
+
+			var v = this.simulation.state.models[id];
 			
 			var color = this.Simulation.Palette.GetColor(v);
 		}

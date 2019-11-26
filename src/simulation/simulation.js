@@ -15,26 +15,31 @@ export default class Simulation extends Evented {
 	get Palette() { return this.palette; }
 		
 	get State() { return this.state; }
-	
+
 	get Selection() { return this.selection; }
-		
+	
 	constructor() {
 		super();
 		
 		this.frames = [];
 		this.index = {};
+		this.models = [];
 		
 		this.name = null;
 		this.files = null;
-		this.size = null;
 		this.simulator = null;
 		this.nFrames = null;
 		this.lastFrame = null;
 		
 		this.state = null;
+		this.palette = null;
+		this.info = null;
+		
 		this.palette = new Palette();
 		this.selection = new Selection();
 		this.cache = new Cache();
+		
+		this.size = 0;
 	}
 	
 	Initialize(info, settings) {
@@ -43,23 +48,15 @@ export default class Simulation extends Evented {
 		this.files = info.files;
 		this.lastFrame = info.lastFrame;
 		this.nFrames = info.nFrames;
-		
-		if (!this.size) this.size = this.DefaultSize();
-		
+				
 		this.BuildCache(settings.Cache);
 		this.BuildDifferences();
 		
 		this.state = this.cache.First();
 	}
 	
-	DefaultSize() {
-		var t = this.FirstFrame().Last();
-		
-		return { x:t.X + 1, y:t.Y + 1, z:t.Z + 1 };
-	}
-	
 	BuildCache(nCache) {
-		var zero = State.Zero(this.size);
+		var zero = State.Zero(this.models);
 		
 		this.cache.Build(nCache, this.frames, zero);
 		
@@ -67,7 +64,7 @@ export default class Simulation extends Evented {
 	}
 	
 	BuildDifferences() {		
-		var state = State.Zero(this.size);
+		var state = State.Zero(this.models);
 		
 		Array.ForEach(this.frames, function(f) { f.Difference(state); })
 	}
@@ -90,12 +87,12 @@ export default class Simulation extends Evented {
 		return this.frames[this.state.i];
 	}
 	
-	AddFrame(id, time) {		
-		var n = this.frames.push(new Frame(id, time));
+	AddFrame(frame) {		
+		this.frames.push(frame);
 		
-		this.index[id] = this.frames[n - 1];
+		this.index[frame.time] = frame;
 		
-		return this.frames[n - 1];
+		return frame;
 	}
 	
 	Frame(i) {
@@ -164,5 +161,11 @@ export default class Simulation extends Evented {
 	
 	onSimulation_Error(message) {
 		this.Emit("Error", { error:new Error(message) });
+	}
+	
+	LoopOnSize(delegate) {
+		for (var i = 0; i < this.size; i++) {
+			delegate(i);
+		}
 	}
 }

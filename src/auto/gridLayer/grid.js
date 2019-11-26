@@ -73,7 +73,8 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 	DrawState(state, z, palette, selection) {		
 		for (var i = 0; i < this.dimensions.x; i++) {
 			for (var j = 0; j < this.dimensions.y; j++) {
-				var v = state.GetValue(i, j, z);
+				var id = i + "-" + j + "-" + z;
+				var v = state.models[id];
 							
 				var x = i * this.cell;
 				var y = j * this.cell;
@@ -113,8 +114,6 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 	
 	DeselectCell(x, y, color) {
 		this.DrawCell(x, y, color);
-		
-		
 	}
 	
 	SelectCell(x, y, color) {

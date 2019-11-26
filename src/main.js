@@ -10,23 +10,24 @@ import Header from './widgets/header.js';
 import Control from './widgets/control.js';
 import Dashboard from './ui/dashboard.js';
 import Session from './simulation/session.js';
+import AutoSelector from './auto/selector/auto.js';
 
 export default class Main extends Widget { 
 
-	constructor(node) {
+	constructor(node) {		
 		Lang.locale = "en";
 		Lang.nls = nls;
 		
 		super(node);
-				
+		
 		this.Node("control").On("Ready", this.onControlReady_Handler.bind(this));
 		this.Node("control").On("Save", this.onControlSave_Handler.bind(this));
 		
 		this.Node("dashboard").Settings = this.Node("control").Settings;
-		this.Node("dashboard").On("NewWidget", this.onDashboardNewWidget_Handler.bind(this));
+		this.Node("dashboard").On("NewCell", this.onDashboardNewCell_Handler.bind(this));
 		this.Node("dashboard").Resize();
 	}
-		
+	
 	onControlReady_Handler(ev) {
 		Dom.RemoveCss(this.Node("dashboard").container, "hidden");
 		
@@ -43,13 +44,21 @@ export default class Main extends Widget {
 		else this.Node("dashboard").AddCell();
 	}
 	
-	onDashboardNewWidget_Handler(ev) {		
-		if (ev.configurator) { 		
-			ev.cell.SetWidget(new ev.configurator());
+	onDashboardNewCell_Handler(ev) {	
+		ev.cell.SetWidget(new AutoSelector(null, this.simulation));
+		
+		ev.cell.Widget.On("Load", this.onSelectorLoad_Handler.bind(this, ev.cell));	
+	}
+	
+	onSelectorLoad_Handler(cell, ev) {
+		cell.Empty();
 			
-			ev.cell.Widget.On("Configured", this.onWidgetConfigured_Handler.bind(this, ev.cell, ev.definition));
+		if (ev.configurator) { 		
+			cell.SetWidget(new ev.configurator());
+			
+			cell.Widget.On("Configured", this.onWidgetConfigured_Handler.bind(this, cell, ev.definition));
 		}
-		else this.SetWidgetInCell(ev.cell, ev.definition, null);
+		else this.SetWidgetInCell(cell, ev.definition, null);
 	}
 
 	onWidgetConfigured_Handler(cell, definition, ev) {		
