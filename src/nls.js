@@ -53,16 +53,13 @@ var nls = {
 		"en" : "DEVS Diagram"
 	},
 	"Widget_DEVS_Tooltip_Title" : {
-		"en" : "Model Id : {0} ||  State : {1}."		
+		"en" : "Model Id : {0} <br>Last output : {1}"		
 	},
 	"Widget_DevsDiagram" : {
 		"en" : "Select a SVG File: "		
 	},
 	"SVG_Instructions" : {
 		"en":"Click to browse"
-	},
-	"SVG_Title" : {
-		"en":"SVG files"
 	},
 	"Info_Label_NumberTransitions" : {
 		"en" : "Number of transitions:"

@@ -7,100 +7,98 @@ import Widget from '../../ui/widget.js';
 
 export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends Widget { 
 
-	constructor(file) {
+	constructor() {
 		super();
-		
-		this.dimensions = null;
-		this.cell = null;
-		this.svgcontent="";
-		this.svgcontent=file;
+	}
+	
+	SetSVG(svg) {
+		this.Node('diagram').innerHTML = svg;
 
-		this.Node("diagram").addEventListener("click", this.onsvgClick_Handler.bind(this));
-	
-		this.Node("diagram").addEventListener("mousemove", this.onsvgMouseMove_Handler.bind(this));
-		this.Node("diagram").addEventListener("mouseout", this.onsvgMouseOut_Handler.bind(this));
+		var models = this.Node('diagram').querySelectorAll("[model]");
+		
+		this.models = {};
+		
+		Array.ForEach(models, function(model) {
+			var id = model.getAttribute("model");
+			
+			model.addEventListener("mousemove", this.onSvgMouseMove_Handler.bind(this));
+			model.addEventListener("click", this.onSvgClick_Handler.bind(this));
+			model.addEventListener("mouseout", this.onSvgMouseOut_Handler.bind(this));
+			
+			this.models[id] = {
+				svg : model,
+				fill : model.getAttribute("fill"),
+				stroke : model.getAttribute("stroke"),
+				width : model.getAttribute("stroke-width")
+			}
+		}.bind(this));
 	}
 	
-	onsvgMouseMove_Handler(ev) {
-		this.data2="";
-		this.data2= ev.target.id;
+	onSvgMouseMove_Handler(ev) {
+		var model = ev.target.getAttribute('model');
 	
-		this.Emit("MouseMove", {x:ev.pageX, y:ev.pageY , data2:this.data2});
+		this.Emit("MouseMove", { x:ev.pageX, y:ev.pageY , model:model });
 	}
 		
-	onsvgMouseOut_Handler(ev) {		
+	onSvgMouseOut_Handler(ev) {
 		this.Emit("MouseOut", { x:ev.pageX, y:ev.pageY });
 	}
 	
-	onsvgClick_Handler(ev) {
-		this.selectedid="";
-		this.selectedid= ev.target.id;
+	onSvgClick_Handler(ev) {
+		var model = ev.target.getAttribute('model');
 		
-		this.Emit("Click", {x:ev.pageX, y:ev.pageY , selectedid:this.selectedid});
+		this.Emit("Click", { x:ev.pageX, y:ev.pageY , model:this.models[model] });
+	}
+		
+	DrawModel(model, fill, stroke, width) {
+		if (fill) model.svg.setAttribute('fill', fill);
+		if (stroke) model.svg.setAttribute('stroke', stroke);
+		if (width) model.svg.setAttribute('stroke-width', width);
 	}
 	
-	DrawSVGBorder(selected_id,color) {
-		// Find the new X, Y coordinates of the clicked cell
-		if(selected_id!="") {	
-			document.getElementById(selected_id).style.stroke = color;
-			document.getElementById(selected_id).style['stroke-width']=5.0;
-		}
+	ResetModel(model) {
+		model.svg.setAttribute('fill', model['fill']);
+		model.svg.setAttribute('stroke', model['stroke']);
+		model.svg.setAttribute('stroke-width', model['stroke-width']);
 	}
 	
 	Template() {
-		return "<div class='grid'>" + 
-		 	      "<div handle='title' class='grid-title'>nls(DevsDiagram_Title)</div>" + 
-				  "<div handle='diagram-container' class='grid-canvas-container'>" +
+		return "<div class='devs-diagram'>" + 
+		 	      "<div handle='title' class='devs-diagram-title'>nls(DevsDiagram_Title)</div>" + 
+				  "<div handle='diagram-container' class='devs-diagram-container'>" +
 					"<div handle='diagram' ></div>" +
-					"<div handle='diagram_hidden' hidden></div>" +
 				  "</div>" + 
 			   "</div>";
 	}
 
-	Resize(dimensions) {
+	Resize() {
 		this.size = Dom.Geometry(this.Node("diagram-container"));
 		
 		var pH = 30;
 		var pV = 30;
 		
 		this.Node("diagram").style.margin = `${pV}px ${pH}px`;
-		this.Node("diagram").style.width =   `${(this.size.w - (30))}px`;	
-		this.Node("diagram").style.height =  `${(this.size.h - (30))}px`  ;
+		this.Node("diagram").style.width = `${(this.size.w - (30))}px`;	
+		this.Node("diagram").style.height = `${(this.size.h - (30))}px`;
 	}
 	
 	Draw(state) {
-		this.DrawState(state);
+
 	}
 
-	DrawState(state) {
-		this.Node('diagram_hidden').innerHTML = this.svgcontent;
-		this.Node("diagram_hidden").getElementsByTagName("svg")[0].setAttribute("width", "100%");
-		this.Node("diagram_hidden").getElementsByTagName("svg")[0].setAttribute("height", "100%");
-		this.Node("diagram_hidden").getElementsByTagName("svg")[0].setAttribute("viewbox", "0 0 560 340"); // as per the cell dimesions 
-		this.Node("diagram_hidden").getElementsByTagName("svg")[0].setAttribute("preserveAspectRatio", "none");
-		this.Node("diagram_hidden").getElementsByTagName("title").hidden = true;
-			
-		this.Node('diagram').innerHTML =this.Node('diagram_hidden').innerHTML;	
-	}
-
-	DrawChanges(state) {	
-		//TO DRAW INITIAL STATE AFTER SHOWING THE CHANGES .
-		this.DrawState(state);
-
-		var transitions =this.data.transitions[state.i];
+	DrawChanges(state) {
+		for (var id in this.models) this.ResetModel(this.models[id]);
+		
+		//TO DRAW INITIAL STATE AFTER SHOWING THE CHANGES.
+		var transitions = this.data.transitions[state.i];
 		
 		Array.ForEach(transitions, function(t) {
- 	 		
-			const fill = 'LightSeaGreen';
-			var t_id =t.id;
+			var m = this.models[t.id];
 			
-			if(document.getElementById(t_id)!=null)	{
-				document.getElementById(t_id).style.fill=fill;
-				const fillstroke = 'teal';
-
-				document.getElementById(t_id).style.stroke = fillstroke;
-				document.getElementById(t_id).style['stroke-width']=5.0;
-			}
+			if (!m) return;
+		
+			// TODO : style should come from auto wrapper.
+			this.DrawModel(m, 'LightSeaGreen', null, 3.0);
 		}.bind(this));
 	}
 

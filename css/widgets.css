@@ -62,6 +62,7 @@
 }
 
 .popup .popup-title,
+.devs-diagram .devs-diagram-title,
 .grid .grid-title,
 .palette .palette-title,
 .dropzone .dropzone-title,
@@ -406,12 +407,17 @@ img.palette {
 	stroke:var(--color-4);
 }
 
-.grid {
+.devs-diagram svg {
+	pointer-events : visible;
+}
+
+.devs-diagram, .grid {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
+.devs-diagram-container,
 .grid-canvas-container {
     display: flex;
     flex: 1 1 auto;

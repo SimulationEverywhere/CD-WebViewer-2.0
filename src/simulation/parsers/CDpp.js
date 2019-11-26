@@ -25,11 +25,16 @@ export default class CDpp extends Parser {
 		var log = Array.Find(this.files, function(f) { return f.name.match(/.log/i); });
 		var ma = Array.Find(this.files, function(f) { return f.name.match(/.ma/i); });
 		
+		// TODO : This should reject
 		if (!log || !ma) d.Resolve(false);
 			
 		var r = new ChunkReader();
 		
-		r.ReadChunk(log, 200).then((ev) => d.Resolve(ev.result.indexOf("Mensaje ") >= 0));
+		r.ReadChunk(ma, 200).then((ev) => { 
+			var type = ev.result.match(/type\s*:\s*(.+)/);
+
+			d.Resolve(type && type[1] == "cell");
+		});
 		
 		return d.promise;
 	}
