@@ -58,25 +58,25 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 	Draw() {
 		var s = this.Simulation;
 		
-		this.Widget.Draw(s.state, this.z, s.Palette, s.Selection);
+		this.Widget.Draw(s.state, this.z, s.Palette, s);
 	}
 
 	onSimulationMove_Handler(ev) {	
 		var s = this.Simulation;
 		
-		this.Widget.DrawChanges(ev.frame, this.z, s.Palette, s.Selection);
+		this.Widget.DrawChanges(ev.frame, this.z, s.Palette, s);
 	}
 	
 	onSimulationJump_Handler(ev) {
 		var s = this.Simulation;
 		
-		this.Widget.Draw(s.state, this.z, s.Palette, s.Selection);
+		this.Widget.Draw(s.state, this.z, s.Palette, s);
 	}
 	
 	onSimulationPaletteChanged_Handler(ev) {
 		var s = this.Simulation;
 		
-		this.Widget.Draw(s.state, this.z, s.Palette, s.Selection);
+		this.Widget.Draw(s.state, this.z, s.Palette, s);
 	}
 	
 	onSimulationRecordStart_Handler(ev) {
@@ -105,16 +105,16 @@ export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated {
 	
 	onClick_Handler(ev) {
 		var id = ev.data.x + "-" + ev.data.y + "-" + this.z;
-		var isSelected = this.Simulation.Selection.IsSelected(id);		
+		var isSelected = this.Simulation.IsSelected(id);		
 		
 		if (!isSelected) {
-			this.Simulation.Selection.Select(id);
+			this.Simulation.Select(id);
 			
 			var color = this.Simulation.Palette.SelectedColor;
 		} 
 		
 		else {
-			this.Simulation.Selection.Deselect(id);
+			this.Simulation.Deselect(id);
 
 			var v = this.simulation.state.models[id];
 			

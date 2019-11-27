@@ -23,7 +23,7 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 		var h3 = this.Widget.On("Click", this.onClick_Handler.bind(this));
 		var h4 = this.Simulation.On("Move", this.onSimulationMove_Handler.bind(this));
 		var h5 = this.Simulation.On("Jump", this.onSimulationMove_Handler.bind(this));
-		var h6 = this.Simulation.Selection.On("Change", this.onSelectionChange_Handler.bind(this));
+		var h6 = this.Simulation.On("Selected", this.onSelected_Handler.bind(this));
 		
 		this.Handle([h1, h2, h3, h4, h5,h6]);
 		
@@ -64,12 +64,12 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 		this.Widget.DrawChanges(this.Simulation.state);
 	}
 	
-	onSelectionChange_Handler(ev) {
+	onSelected_Handler(ev) {
 		this.Widget.DrawChanges(this.Simulation.state);
 	}
 	
 	UpdateSelected() {
-		this.selected = this.Simulation.Selection.Selected;
+		this.selected = this.Simulation.Selected;
 	}
 	
 	onMouseMove_Handler(ev) {

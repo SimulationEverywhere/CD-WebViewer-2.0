@@ -20,7 +20,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		var h2 = this.Widget.On("MouseOut", this.onMouseOut_Handler.bind(this));
 		var h3 = this.Simulation.On("Move", this.onSimulationMove_Handler.bind(this));
 		var h4 = this.Simulation.On("Jump", this.onSimulationMove_Handler.bind(this));
-		var h5 = this.Simulation.Selection.On("Change", this.onSelectionChange_Handler.bind(this));
+		var h5 = this.Simulation.On("Selected", this.onSelected_Handler.bind(this));
 		
 		this.Handle([h1, h2, h3, h4, h5]);
 		
@@ -121,7 +121,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		this.tooltip.Hide();
 	}
 	
-	onSelectionChange_Handler(ev) {
+	onSelected_Handler(ev) {
 		this.UpdateSelected();
 		this.BuildTooltip();
 		this.Data();
@@ -129,7 +129,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 	}
 	
 	UpdateSelected() {
-		this.selected = this.Simulation.Selection.Selected;
+		this.selected = this.Simulation.Selected;
 	}
 	
 	Save() {

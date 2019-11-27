@@ -3,7 +3,6 @@
 import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
 import Palette from './palettes/basic.js';
-import Selection from './selection.js';
 import State from './state.js';
 import Cache from './cache.js';
 import Frame from './frame.js';
@@ -16,7 +15,7 @@ export default class Simulation extends Evented {
 		
 	get State() { return this.state; }
 
-	get Selection() { return this.selection; }
+	get Selected() { return this.selected; }
 	
 	constructor() {
 		super();
@@ -24,6 +23,7 @@ export default class Simulation extends Evented {
 		this.frames = [];
 		this.index = {};
 		this.models = [];
+		this.selected = [];
 		
 		this.name = null;
 		this.files = null;
@@ -36,7 +36,6 @@ export default class Simulation extends Evented {
 		this.info = null;
 		
 		this.palette = new Palette();
-		this.selection = new Selection();
 		this.cache = new Cache();
 		
 		this.size = 0;
@@ -145,7 +144,7 @@ export default class Simulation extends Evented {
 	Save() {
 		return {
 			i : this.state.i,
-			selection : this.selection.Save(),
+			selection : this.selected,
 			palette : this.palette.Save()
 		}
 	}
@@ -153,19 +152,45 @@ export default class Simulation extends Evented {
 	Load(config) {
 		this.GoToFrame(config.i);
 		
-		this.selection.Load(config.selection);
+		this.selected = config.selection;
 		this.palette.Load(config.palette);
 		
 		this.Emit("Session", { simulation:this });
-	}
-	
-	onSimulation_Error(message) {
-		this.Emit("Error", { error:new Error(message) });
 	}
 	
 	LoopOnSize(delegate) {
 		for (var i = 0; i < this.size; i++) {
 			delegate(i);
 		}
+	}
+	
+	onSimulation_Error(message) {
+		this.Emit("Error", { error:new Error(message) });
+	}
+	
+	IsSelected(model) {
+		return this.selected.indexOf(model) > -1;
+	}
+	
+	Select(model) {
+		var idx = this.selected.indexOf(model);
+		
+		// Already selected
+		if (idx != -1) return;
+		
+		this.selected.push(model);
+		
+		this.Emit("Selected", { model:model, selected:true });
+	}
+	
+	Deselect(model) {
+		var idx = this.selected.indexOf(model);
+		
+		// Not in current selection
+		if (idx == -1) return;
+		
+		this.selected.splice(idx, 1);
+		
+		this.Emit("Selected", { model:model, selected:false });
 	}
 }

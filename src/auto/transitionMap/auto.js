@@ -90,7 +90,7 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	}
 	
 	Draw() {		
-		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation.selection);
+		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation);
 	}
 
 	onSimulationMove_Handler(ev) {
@@ -105,13 +105,13 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 			frame.AddTransition(t);
 		}.bind(this));
 		
-		this.Widget.DrawChanges(frame, this.z, this.palette, this.Simulation.selection);
+		this.Widget.DrawChanges(frame, this.z, this.palette, this.Simulation);
 	}
 	
 	onSimulationJump_Handler(ev) {		
 		this.state = this.GetState(this.Simulation, ev.state.i);
 		
-		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation.selection);
+		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation);
 	}
 	
 	onMouseMove_Handler(ev) {

@@ -55,8 +55,9 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 		this.Node("canvas").height = this.dimensions.y * this.cell;			
 	}
 	
-	Draw(state, z, palette, selection) {
-		if (this.dimensions) this.DrawState(state, z, palette, selection);
+	// TODO : grid shouldn't use simulation object
+	Draw(state, z, palette, simulation) {
+		if (this.dimensions) this.DrawState(state, z, palette, simulation);
 		
 		else this.Default(DEFAULT_COLOR);
 	}
@@ -70,7 +71,8 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 		this.ctx.fillRect(0, 0, this.size.w, this.size.h);
 	}
 	
-	DrawState(state, z, palette, selection) {		
+	// TODO : grid shouldn't use simulation object
+	DrawState(state, z, palette, simulation) {		
 		for (var i = 0; i < this.dimensions.x; i++) {
 			for (var j = 0; j < this.dimensions.y; j++) {
 				var id = i + "-" + j + "-" + z;
@@ -82,12 +84,13 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 				this.ctx.fillStyle = palette.GetColor(v);
 				this.ctx.fillRect(x, y, this.cell, this.cell);
 				
-				if (selection.IsSelected(i, j, z)) this.DrawCellBorder(i, j, palette.SelectedColor);
+				if (simulation.IsSelected(id)) this.DrawCellBorder(i, j, palette.SelectedColor);
 			}
 		}
 	}
 	
-	DrawChanges(frame, z, palette, selection) {
+	// TODO : grid shouldn't use simulation object
+	DrawChanges(frame, z, palette, simulation) {
 		Array.ForEach(frame.transitions, function(t) {
 			if (t.Z != z) return;
 			
@@ -97,7 +100,7 @@ export default Lang.Templatable("Grid.Grid", class Grid extends Widget {
 			this.ctx.fillStyle = palette.GetColor(t.Value);
 			this.ctx.fillRect(x, y, this.cell, this.cell);
 				
-			if (selection.IsSelected(t.X, t.Y, z)) this.DrawCellBorder(t.X, t.Y, palette.SelectedColor);
+			if (simulation.IsSelected(t.id)) this.DrawCellBorder(t.X, t.Y, palette.SelectedColor);
 		}.bind(this));
 	}
 	
