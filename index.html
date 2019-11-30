@@ -6,7 +6,7 @@
  * Carleton University, Ottawa, Canada.​​
  * License: GNU General Public License v3.0
  *
- * Project: Web-based Cell-DEVS Simulation Viewer
+ * Project: Web-based DEVS Simulation Viewer
  */
 -->
 <!doctype html>
@@ -14,10 +14,10 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="user-scalable=no" />
-		<meta name="description" content="This web application is a viewer for Cell-DEVS simulation log files">
+		<meta name="description" content="This web application is a viewer for DEVS simulation log files">
 		<meta name="author" content="Bruno St-Aubin, Omar Hesham">
 		
-		<title>Simulation Viewer | ARS Lab | Carleton University</title>
+		<title>DEVS Simulation Viewer | ARS Lab | Carleton University</title>
 		
 		<link rel='shortcut icon' href='assets/favicon.ico'>
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
@@ -26,10 +26,17 @@
 		<link rel="stylesheet" href="css/dashboard.css?v=1.0">
 		<link rel="stylesheet" href="css/theme-4.css?v=1.0">
 		
+		<script src="references/zip/zip.js"></script>
 		<script src="references/d3-4.12.0/d3.js"></script>
 	</head>
 
 	<body>
+		<script>
+			var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+			
+			if (!isChrome) alert("This application should be used with Chrome only.")
+		</script>
+		
 		<script type="module">
 			import Main from "./src/main.js";
 		

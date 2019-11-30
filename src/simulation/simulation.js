@@ -1,86 +1,65 @@
-//'use strict';
+'use strict';
 
 import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
-import Palette from './palette.js';
-import Selection from './selection.js';
-import Info from './info.js';
+import Palette from './palettes/basic.js';
 import State from './state.js';
 import Cache from './cache.js';
 import Frame from './frame.js';
 
 export default class Simulation extends Evented { 
 	
-	get Size() { return this.info.Size; }
-
+	get Size() { return this.size; }
+	
 	get Palette() { return this.palette; }
-	
-	get Info() { return this.info; }
-	
+		
 	get State() { return this.state; }
 
-	get Models() { return this.models; }
-
-	get ModelLength() { return this.modelLength; }
-
-	get Selection() { return this.selection; }
-
-	get StateMaxFrequency() { 
-		if(this.info.Simulator == 'DEVS'){
-			return this.info.Size;
-		}
-		else{
-			return this.info.Size.x * this.info.Size.y; 
-		}
-
-	}
+	get Selected() { return this.selected; }
 	
 	constructor() {
 		super();
 		
 		this.frames = [];
+		this.index = {};
 		this.models = [];
-		this.modelLength = 0;
+		this.selected = [];
+		
+		this.name = null;
+		this.files = null;
+		this.simulator = null;
+		this.nFrames = null;
+		this.lastFrame = null;
+		
 		this.state = null;
 		this.palette = null;
 		this.info = null;
-		this.selection = null;
-	}
-	
-	LoadData(nCache, data) {	
-		this.LoadPalette(data.palette);
-		this.LoadFrames(data.frames);
-		this.LoadModels(data.models);
-		this.LoadInfo(data.parser);
-		this.selection = new Selection();
-		var model_clone = JSON.parse(JSON.stringify(this.models));
+		
+		this.palette = new Palette();
 		this.cache = new Cache();
 		
-		this.cache.Build(nCache, this.frames, this.models);
-		this.models = model_clone;
+		this.size = 0;
+	}
+	
+	Initialize(info, settings) {
+		this.simulator = info.simulator;
+		this.name = info.name;
+		this.files = info.files;
+		this.lastFrame = info.lastFrame;
+		this.nFrames = info.nFrames;
+				
+		this.BuildCache(settings.Cache);
+		this.BuildDifferences();
 		
 		this.state = this.cache.First();
+	}
+	
+	BuildCache(nCache) {
+		var zero = State.Zero(this.models);
 		
-		this.BuildDifferences();
-	}
-	
-	LoadPalette(palette) {
-		this.palette = palette;
-	}
-	
-	LoadFrames(frames) {
-		this.frames = frames;
-	}
-
-	LoadModels(models) {
-		this.models = models;
-		for (var id in this.models) this.modelLength++;
-	}
-	
-	LoadInfo(parser) {
-		this.info = new Info();
+		this.cache.Build(nCache, this.frames, zero);
 		
-		this.info.Load(this, parser);
+		this.state = this.cache.First();
 	}
 	
 	BuildDifferences() {		
@@ -107,8 +86,20 @@ export default class Simulation extends Evented {
 		return this.frames[this.state.i];
 	}
 	
+	AddFrame(frame) {		
+		this.frames.push(frame);
+		
+		this.index[frame.time] = frame;
+		
+		return frame;
+	}
+	
 	Frame(i) {
 		return this.frames[i];
+	}
+	
+	Index(id) {
+		return this.index[id];
 	}
 	
 	FirstFrame(i) {
@@ -142,10 +133,18 @@ export default class Simulation extends Evented {
 		this.Emit("Move", { frame : reverse, direction:"previous" });
 	}
 	
+	StartRecord() {
+		this.Emit("RecordStart");
+	}
+	
+	StopRecord() {
+		this.Emit("RecordStop");
+	}
+	
 	Save() {
 		return {
 			i : this.state.i,
-			selection : this.selection.Save(),
+			selection : this.selected,
 			palette : this.palette.Save()
 		}
 	}
@@ -153,13 +152,45 @@ export default class Simulation extends Evented {
 	Load(config) {
 		this.GoToFrame(config.i);
 		
-		this.selection.Load(config.selection);
+		this.selected = config.selection;
 		this.palette.Load(config.palette);
 		
 		this.Emit("Session", { simulation:this });
 	}
 	
+	LoopOnSize(delegate) {
+		for (var i = 0; i < this.size; i++) {
+			delegate(i);
+		}
+	}
+	
 	onSimulation_Error(message) {
 		this.Emit("Error", { error:new Error(message) });
+	}
+	
+	IsSelected(model) {
+		return this.selected.indexOf(model) > -1;
+	}
+	
+	Select(model) {
+		var idx = this.selected.indexOf(model);
+		
+		// Already selected
+		if (idx != -1) return;
+		
+		this.selected.push(model);
+		
+		this.Emit("Selected", { model:model, selected:true });
+	}
+	
+	Deselect(model) {
+		var idx = this.selected.indexOf(model);
+		
+		// Not in current selection
+		if (idx == -1) return;
+		
+		this.selected.splice(idx, 1);
+		
+		this.Emit("Selected", { model:model, selected:false });
 	}
 }

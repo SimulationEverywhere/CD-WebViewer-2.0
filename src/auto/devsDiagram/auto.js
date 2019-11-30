@@ -11,17 +11,19 @@ import Tooltip from '../../ui/tooltip.js';
 export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extends Automated { 
 
 	constructor(config, simulation) {
-		super(new Diagram(config.svg), simulation);
-		this.svg=config.svg;
+		super(new Diagram(), simulation);
+		
+		this.Widget.SetSVG(config.svg);
+		
+		this.svg = config.svg;
 		this.selected = [];
-		//this.type = 'continuous';
+
 		var h1 = this.Widget.On("MouseMove", this.onMouseMove_Handler.bind(this));
 		var h2 = this.Widget.On("MouseOut", this.onMouseOut_Handler.bind(this));
 		var h3 = this.Widget.On("Click", this.onClick_Handler.bind(this));
 		var h4 = this.Simulation.On("Move", this.onSimulationMove_Handler.bind(this));
 		var h5 = this.Simulation.On("Jump", this.onSimulationMove_Handler.bind(this));
-		var h6 = this.Simulation.Selection.On("Change", this.onSelectionChange_Handler.bind(this));
-		
+		var h6 = this.Simulation.On("Selected", this.onSelected_Handler.bind(this));
 		
 		this.Handle([h1, h2, h3, h4, h5,h6]);
 		
@@ -40,123 +42,67 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 		this.tooltip.nodes.label = Dom.Create("div", { className:"tooltip-label" }, this.tooltip.Node("content"));
 	}
 	
-	
 	Refresh() {
 		this.Resize();
-		this.Draw();
-		this.Update();
 	}
 
 	Resize() {
 		this.Widget.Resize();
 	}
 	
-	Draw() {
-		var s = this.Simulation;
+	Data() {
+		var transitions = Array.Map(this.Simulation.frames, function(f) { return f.transitions; });
 		
-		this.Widget.Draw(s.state,s.selection);
-	}
-	Update() {
-		this.Widget.Update(this.Simulation.state,this.Simulation.selection);
-	}
-	Data(selected, frames) {
 		var data = {
-			type : this.type,
-			series : Array.Map(this.selected, function(id) { return { id:id, values:[] }; }),
-			times : [],
-			transitions : [],
-			max: -Infinity,
-			min: Infinity 
+			transitions : transitions
 		};
-				
-		Array.ForEach(this.Simulation.frames, function(f, i) {
-			Array.ForEach(this.selected, function(id, j) {
-				var t = f.TransitionById(id);
-				var v = (t) ? t.Value : data.series[j].values[i - 1];
-				
-				data.series[j].values.push(v)
-				
-				if (data.min > v) data.min = v; 
-				if (data.max < v) data.max = v; 
-			}.bind(this));
-								
-			data.times.push(f.time);
-			data.transitions.push(f.transitions);
-		}.bind(this));
 		
 		this.Widget.Data(data);
-	
 	}
 
-	onSimulationMove_Handler(ev) {
-	//var s = this.Simulation;
-	this.Update();
-	//	this.Widget.DrawChanges(s.state);
+	onSimulationMove_Handler(ev) {	
+		this.Widget.DrawChanges(this.Simulation.state);
 	}
 	
-	onSelectionChange_Handler(ev) {
-		this.UpdateSelected();
-	//	this.BuildTooltip();
-		this.Data();
-		this.Refresh();
-			//var s = this.Simulation;
-		//this.Widget.DrawChanges(s.state,s.frames,this.selected);  //both works same, no event at this selection
-		//this.Widget.DrawChanges(s.state,ev.frame,this.selected);
-		//	this.Widget.DrawChanges(s.state);
+	onSelected_Handler(ev) {
+		this.Widget.DrawChanges(this.Simulation.state);
 	}
 	
 	UpdateSelected() {
-		this.selected = Array.Map(this.Simulation.Selection.Selected, function(s) {
-		//	console.log(s);
-			return s;
-		});
+		this.selected = this.Simulation.Selected;
 	}
 	
-
-	
 	onMouseMove_Handler(ev) {
-		var s = this.Simulation;
-		var subs = [ev.data2,s.state.model[ev.data2]];
+		var subs = [ev.model, this.Simulation.state.models[ev.model]];
 		
 		this.tooltip.nodes.label.innerHTML = Lang.Nls("Widget_DEVS_Tooltip_Title", subs);
 	
 		this.tooltip.Show(ev.x + 20, ev.y);
-		
 	}
 	
+	onClick_Handler(ev) {
+		var idx = this.selected.indexOf(ev.model);
+		
+		// TODO : Selection should be handled by diagram, not auto class
+		if (idx == -1) {
+			this.selected.push(ev.model);
+			this.Widget.DrawModel(ev.model, null, 'red', null);
+		}
+		else {
+			this.selected.splice(idx, 1);
+			this.Widget.ResetModel(ev.model);
+		}
+		
+		Array.ForEach(this.selected, function(s) {
+			this.Widget.DrawModel(s, null, 'red', null);
+		}.bind(this));
+	}
+
 	onMouseOut_Handler(ev) {
 		this.tooltip.Hide();
 	}
 	
-	onClick_Handler(ev) {
-		var s = this.Simulation;
-		var id=ev.selectedid;
-		//var state_id = s.state.model[ev.selectedid];
-		
-		var isSelected = this.Simulation.Selection.IsSelected(id);		
-	//console.log(state_id);
-	//	console.log(s.state);
-		if (!isSelected) {
-			this.Simulation.Selection.Select(id);
-			var fillstroke = 'red';
-		} 
-		
-		else {
-		//	var fillstroke = 'black';
-			this.Simulation.Selection.Deselect(id);
-
-		}
-			
-			this.Widget.DrawSVGBorder(s.Selection,fillstroke);
-	}
-
-	
-	
-	
-
 	Save() {
 		return { name:"Auto.DevsDiagram", config:{ svg:this.svg }}
 	}
-
-
 });

@@ -40,20 +40,11 @@ var nls = {
 	"Info_Label_Files" : {
 		"en" : "Files:"
 	},
-	"Info_Label_Size" : {
-		"en" : "Size:"
-	},
 	"Info_Label_Simulator" : {
 		"en" : "Simulator:"
 	},
 	"Info_Label_NumberFrames" : {
 		"en" : "Number of frames:"
-	},
-	"Info_Label_NumberTransitions" : {
-		"en" : "Number of transitions:"
-	},
-	"Info_Label_LastFrame" : {
-		"en" : "Last frame:"
 	},
 	"Widget_AutoDevsDiagram" : {
 		"en" : "DEVS Diagram"		
@@ -62,7 +53,7 @@ var nls = {
 		"en" : "DEVS Diagram"
 	},
 	"Widget_DEVS_Tooltip_Title" : {
-		"en" : "Model Id : {0} ||  State : {1}."		
+		"en" : "Model Id : {0} <br>Last output : {1}"		
 	},
 	"Widget_DevsDiagram" : {
 		"en" : "Select a SVG File: "		
@@ -70,8 +61,11 @@ var nls = {
 	"SVG_Instructions" : {
 		"en":"Click to browse"
 	},
-	"SVG_Title" : {
-		"en":"SVG files"
+	"Info_Label_NumberTransitions" : {
+		"en" : "Number of transitions:"
+	},
+	"Info_Label_LastFrame" : {
+		"en" : "Last frame:"
 	},
 	"Playback_FastBackward" : {
 		"en" : "Go to first frame"
@@ -94,11 +88,11 @@ var nls = {
 	"Playback_Seek" : {
 		"en" : "Slide to seek frame"
 	},
+	"Playback_Record" : {
+		"en" : "Record simulation to .webm"
+	},
 	"Settings_Title" : {
 		"en" : "Settings"
-	},
-	"Settings_Size" : {
-		"en" : "Grid size:"
 	},
 	"Settings_FPS" : {
 		"en" : "Frames per second:"
@@ -109,9 +103,15 @@ var nls = {
 	"Settings_ShowGrid" : {
 		"en" : "Show grid:"
 	},
+	"Settings_Size" : {
+		"en" : "Row Height:"
+	},
 	"Control_PaletteEditor" : {
 		"en" : "Palette editor"
 	},	
+	"Control_RiseList" : {
+		"en":"Load model from RISE"
+	},
 	"Palette_Title" : {
 		"en" : "Palette editor:"
 	},
@@ -228,6 +228,9 @@ var nls = {
 	},
 	"Configurator_Title" : {
 		"en" : "{0} Configuration"
+	},
+	"Main_Unsupported_Browser" : {
+		"en" : "This application is for the Chrome browser. It requires many features that are not supported by other browsers."
 	}
 }
 

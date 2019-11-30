@@ -2,6 +2,7 @@
 
 import Lang from '../utils/lang.js';
 import Dom from '../utils/dom.js';
+import Sim from '../utils/sim.js';
 import Widget from '../ui/widget.js';
 
 export default Lang.Templatable("Widget.Playback", class Playback extends Widget { 
@@ -12,6 +13,7 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		this.current = 0;
 		this.interval = null;
 		this.direction = null;
+		this.recording = false;
 		
 		this.Enable(false);
 		
@@ -22,6 +24,7 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		this.Node("stepForward").addEventListener("click", this.onStepForwardClick_Handler.bind(this));
 		this.Node("last").addEventListener("click", this.onLastClick_Handler.bind(this));
 		this.Node("slider").addEventListener("input", this.onSliderChange_Handler.bind(this));
+		this.Node("record").addEventListener("click", this.onRecordClick_Handler.bind(this));
 	}
 	
 	Initialize(simulation, settings) {
@@ -51,6 +54,7 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		this.Node("stepForward").disabled = !isEnabled;
 		this.Node("last").disabled = !isEnabled;
 		this.Node("slider").disabled = !isEnabled;
+		this.Node("record").disabled = !isEnabled;
 	}
 	
 	SetCurrent(i) {
@@ -71,6 +75,16 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		Dom.SetCss(this.Node("play"), "fas fa-play");
 		
 		return d;
+	}
+	
+	Play(loop, interval) {		
+		this.interval = setInterval(function(){ 
+			if (this.current < this.max) this.GoToNext();
+		
+			else if (loop) this.GoTo(this.min);
+			
+			else this.Stop();
+		}.bind(this), interval);
 	}
 	
 	GoToPrevious() {
@@ -128,6 +142,8 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		
 		Dom.SetCss(this.Node("play"), "fas fa-pause");
 		
+		this.Play(this.settings.Loop, this.settings.Interval);
+		/*
 		this.interval = setInterval(function(){ 
 			if (this.current < this.max) this.GoToNext();
 		
@@ -135,6 +151,7 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 			
 			else this.Stop();
 		}.bind(this), this.settings.Interval);
+		*/
 	}
 	
 	onStepForwardClick_Handler(ev) {
@@ -149,6 +166,18 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		this.Stop();
 		
 		this.GoTo(this.max);
+	}
+	
+	onRecordClick_Handler(ev) {		
+		this.recording = !this.recording;
+		
+		if (this.recording) this.simulation.StartRecord();
+		
+		else this.simulation.StopRecord();
+		
+		var css = this.recording ? "fas fa-square record" : "fas fa-circle record";
+		
+		Dom.SetCss(this.Node("record"), css);
 	}
 	
 	onSliderChange_Handler(ev) {
@@ -171,6 +200,7 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 				  "<button handle='last' title='nls(Playback_FastForward)' class='fas fa-fast-forward'></button>" +
 			   "</div>" + 
 			   "<input handle='slider' class='slider' title='nls(Playback_Seek)' type='range' min='0' max='1'>" +
-			   "<label handle='label' class='label'></label>";
+			   "<label handle='label' class='label'></label>" + 
+			   "<button handle='record' title='nls(Playback_Record)' class='fas fa-circle record'></button>";
 	}
 });

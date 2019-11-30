@@ -24,4 +24,8 @@ export default class Transition {
 	set Diff(value) {
 		this.diff = value;
 	}
+	
+	Reverse() {
+		return new Transition(this.id, this.value - this.diff, this.diff);
+	}
 }

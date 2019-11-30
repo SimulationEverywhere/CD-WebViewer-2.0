@@ -6,7 +6,6 @@ import Widget from '../ui/widget.js';
 import Array from '../utils/array.js';
 import Lang from '../utils/lang.js';
 import Dom from '../utils/dom.js';
-import AutoSelector from '../auto/selector/auto.js';
 
 export default Lang.Templatable("UI.Dashboard", class Dashboard extends Widget { 
 
@@ -35,7 +34,7 @@ export default Lang.Templatable("UI.Dashboard", class Dashboard extends Widget {
 		
 		this.last.Resize(height);
 		
-		this.last.On("Click", (ev) => { this.AddCell() });
+		this.last.On("Click", (ev) => { this.AddCell(); });
 	}
 	
 	AddCell() {
@@ -49,10 +48,8 @@ export default Lang.Templatable("UI.Dashboard", class Dashboard extends Widget {
 		this.cells.push(cell);
 		
 		Dom.Place(this.last.Root, this.container);
-				
-		cell.SetWidget(new AutoSelector());
 		
-		cell.Widget.On("Load", this.onSelectorLoad_Handler.bind(this, cell));
+		this.Emit("NewCell", { cell:cell });
 		
 		this.Resize();
 		
@@ -85,12 +82,6 @@ export default Lang.Templatable("UI.Dashboard", class Dashboard extends Widget {
 	
 	onCellSpan_Handler(ev) {
 		this.Resize();
-	}
-	
-	onSelectorLoad_Handler(cell, ev) {
-		cell.Empty();
-		
-		this.Emit("NewWidget", { cell:cell, definition:ev.definition, configurator:ev.configurator });
 	}
 	
 	onSettingsChange_Handler(ev) {
