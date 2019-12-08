@@ -155,6 +155,11 @@ img.palette {
 	width : 28px;
 }
 
+.popup.popup-palette .popup-container {
+	max-width: 300px;
+    max-height: 350px;
+}
+
 .popup .palette {
     padding: 15px;
 }
@@ -481,6 +486,10 @@ img.palette {
 }
 
 /* TODO: Review CSS for rise list widget */
+.popup.popup-rise .popup-container {
+    max-height: 450px;
+}
+
 .rise {
 	cursor: pointer;
     height: 28px;
@@ -507,12 +516,15 @@ img.palette {
 ul {
     margin: 0;
     padding: 0;
+    padding: 0;
+    margin: 15px;
+    border: dotted thin;
 }
   
 ul li {
     cursor: pointer;
     position: relative;
-    padding: 12px 8px 12px 40px;
+    padding: 8px;
     list-style-type: none;
     font-size: 18px;
     transition: 0.2s;
@@ -525,8 +537,8 @@ ul li {
 }
   
   /* Set all odd list items to a different color (zebra-stripes) */
-ul li:nth-child(odd) {
-
+ul li:nth-child(even) {
+    background: var(--color-1);
 }
   
   /* Darker background-color on hover */

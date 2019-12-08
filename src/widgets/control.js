@@ -44,6 +44,9 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 			rise : new Popup()
 		}
 		
+		Dom.AddCss(this.popups.rise.Node("root"), "popup-rise");
+		Dom.AddCss(this.popups.palette.Node("root"), "popup-palette");
+		
 		this.popups.palette.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
 		this.popups.palette.Widget = new Palette();
 		
