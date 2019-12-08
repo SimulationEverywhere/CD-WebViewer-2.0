@@ -14,39 +14,43 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
 		// TODO : Not sure this should go here
 		zip.workerScriptsPath = "./references/zip/";
 		
+		var path = location.href.split("/");
+		
+		path.pop();
+		path = path.join("/");
+		
 		// TODO : This is temporary, just to showcase how we could read from RISE. We need
 		// to fix a bunch of issues with RISE before we can fully implement this.
-		this.models = [
-			{
+		this.models = [{
 				"name": "Addiction Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Addiction/Addiction.zip"
+				"url": path + "/log/Addiction/Addiction.zip"
 			}, {
 				"name": "CO2 Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/CO2/CO2.zip"
+				"url": path + "/log/CO2/CO2.zip"
 			}, {
 				"name": "Fire Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Fire/Fire.zip"
+				"url": path + "/log/Fire/Fire.zip"
 			}, {
 				"name": "Fire And Rain Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Fire And Rain/FireAndRain.zip"
+				"url": path + "/log/Fire and Rain/Fire and Rain.zip"
 			}, {
 				"name": "Life Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Life/2/2.zip"
+				"url": path + "/log/Life/2/2.zip"
 			}, {
 				"name": "Logistic Urban Growth Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Logistic Urban Growth/4/4.zip"
+				"url": path + "/log/Logistic Urban Growth/4/4.zip"
 			}, {
 				"name": "Swarm Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Swarm/Swarm.zip"
+				"url": path + "/log/Swarm/Swarm.zip"
 			}, {
 				"name": "Tumor Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Tumor/Tumor.zip"
+				"url": path + "/log/Tumor/Tumor.zip"
 			}, {
 				"name": "UAV Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/UAV/UAV.zip"
+				"url": path + "/log/UAV/UAV.zip"
 			}, {
 				"name": "Worm Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Worm/Worm.zip"
+				"url": path + "/log/Worm/Worm.zip"
 			}
 		]
 		
@@ -64,13 +68,17 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
 	}
 	
     onLiModelClick_Handler(model, ev){
+		// Dom.AddCss(this.Node("list"), "disabled");
+		
+		this.Emit("ModelSelected", { model : model });
+				
         this.getRiseModel(model);
     }
 
     getRiseModel(model){
 		var p = Net.Request(model.url, null, 'blob');
 
-		var success = function(ev) { 
+		var success = function(ev) {
 			var blob = new Blob([ev.result], { type : "application/zip" });
 			var r = new zip.BlobReader(blob);
 
@@ -102,16 +110,23 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
 				
 				var files = Array.Map(data, function(ev) { return ev.result; });
 				
+				// Dom.RemoveCss(this.Node("list"), "disabled");
+			
 				this.Emit("FilesReady", { files : files });
 			}.bind(this));
 		}.bind(this));
 	}
 
 	onError_Handler(error) {
+		// Dom.RemoveCss(this.Node("list"), "disabled");
+			
 		alert(error.toString());
 	}
 
     Template(){
-        return "<ul handle='list'></ul>" ;
+        return "<div class='riseList'>" +
+				 "<div handle='wait' class='wait'></div>" +
+				 "<ul handle='list'></ul>" +
+			   "</div>";
     }
 });

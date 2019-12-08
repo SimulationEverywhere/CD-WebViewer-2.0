@@ -17,10 +17,14 @@ export default class RISE extends Parser {
 	
 	IsValid() {		
 		var d = Lang.Defer();
-		var log = Array.Find(this.files, function(f) { return f.name.match(".log"); });
+		var log = Array.Find(this.files, function(f) { return f.name.match(/\.log/i); });
 		
-		if (!log) d.Resolve(null);
-			
+		if (!log) {
+			d.Resolve(null);
+		
+			return d.promise;
+		}
+		
 		var r = new ChunkReader();
 		
 		r.ReadChunk(log, 200).then((ev) =>  d.Resolve(ev.result.indexOf("0 / L / ") >= 0));
@@ -32,7 +36,7 @@ export default class RISE extends Parser {
 		var d = Lang.Defer();
 		var simulation = new SimulationCA();
 		
-		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
+		var log = Array.Find(files, function(f) { return f.name.match(/\.log/i); });
 
 		var p = Sim.ParseFileByChunk(log, this.ParseLogChunk.bind(this, simulation));
 			

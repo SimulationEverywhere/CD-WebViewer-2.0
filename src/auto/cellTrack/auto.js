@@ -86,7 +86,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		Array.ForEach(this.Simulation.frames, function(f, i) {
 			Array.ForEach(this.selected, function(id, j) {
 				var t = f.TransitionById(id);
-				var v = (t) ? t.Value : data.series[j].values[i - 1];
+				var v = (t) ? t.Value : data.series[j].values[i - 1] || 0;
 				
 				data.series[j].values.push(v)
 				

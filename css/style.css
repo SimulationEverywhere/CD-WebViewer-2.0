@@ -126,6 +126,14 @@ select {
     right: 0px;
 }
 
+.popup .popup-disabled {
+	background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: none;
+    background-image: url(../assets/loading.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .popup .popup-header {
     position: relative;
 }

@@ -54,7 +54,7 @@ export default class Main extends Widget {
 		cell.Empty();
 			
 		if (ev.configurator) { 		
-			cell.SetWidget(new ev.configurator());
+			cell.SetWidget(new ev.configurator(this.simulation));
 			
 			cell.Widget.On("Configured", this.onWidgetConfigured_Handler.bind(this, cell, ev.definition));
 		}
@@ -70,7 +70,7 @@ export default class Main extends Widget {
 	}
 	
 	onControlSave_Handler() {
-		Net.Download(this.simulation.Info.Name + ".json", this.session.Save());
+		Net.Download(this.simulation.name + ".json", this.session.Save());
 	}
 	
 	SetWidgetInCell(cell, definition, configuration) {

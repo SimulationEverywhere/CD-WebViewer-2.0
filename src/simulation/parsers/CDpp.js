@@ -22,12 +22,16 @@ export default class CDpp extends Parser {
 	
 	IsValid() {
 		var d = Lang.Defer();
-		var log = Array.Find(this.files, function(f) { return f.name.match(/.log/i); });
-		var ma = Array.Find(this.files, function(f) { return f.name.match(/.ma/i); });
+		var log = Array.Find(this.files, function(f) { return f.name.match(/\.log/i); });
+		var ma = Array.Find(this.files, function(f) { return f.name.match(/\.ma/i); });
 		
 		// TODO : This should reject
-		if (!log || !ma) d.Resolve(false);
-			
+		if (!log || !ma) {
+			d.Resolve(false);
+		
+			return d.promise;
+		}
+		
 		var r = new ChunkReader();
 		
 		r.ReadChunk(ma, 200).then((ev) => { 
@@ -43,10 +47,10 @@ export default class CDpp extends Parser {
 		var d = Lang.Defer();
 		var simulation = new SimulationCA();
 		
-		var val = Array.Find(files, function(f) { return f.name.match(/.val/i); });
-		var pal = Array.Find(files, function(f) { return f.name.match(/.pal/i); });
-		var ma = Array.Find(files, function(f) { return f.name.match(/.ma/i); });
-		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
+		var val = Array.Find(files, function(f) { return f.name.match(/\.val/i); });
+		var pal = Array.Find(files, function(f) { return f.name.match(/\.pal/i); });
+		var ma = Array.Find(files, function(f) { return f.name.match(/\.ma/i); });
+		var log = Array.Find(files, function(f) { return f.name.match(/\.log/i); });
 		
 		var p1 = Sim.ParseFile(val, this.ParseValFile.bind(this, simulation));
 		var p2 = Sim.ParseFile(pal, this.ParsePalFile.bind(this, simulation));

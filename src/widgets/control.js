@@ -49,6 +49,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		
 		this.popups.rise.Node("title").innerHTML = Lang.Nls("Control_RiseList");
 		this.popups.rise.Widget = new RiseList();
+		this.popups.rise.Widget.On("ModelSelected", this.onRiseModelSelected_Handler.bind(this));
 		this.popups.rise.Widget.On("FilesReady", this.onRiseModelReady_Handler.bind(this));
 	}
 	
@@ -85,7 +86,13 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.popups.rise.Show();
     }
 	
+	onRiseModelSelected_Handler(ev) {
+		this.popups.rise.Disable();
+	}
+	
 	onRiseModelReady_Handler(ev){
+		this.popups.rise.Enable();
+		
 		this.files = ev.files;
 		
 		this.popups.rise.Hide();

@@ -29,7 +29,7 @@ export default class Palette extends Evented {
 		
 		this.classes.splice(i, 1);
 		
-		this.Emit("Change", { palette:this });
+		this.Emit("Change", { palette:this, class:clss });
 	}
 	
 	GetColor(value) {
@@ -45,19 +45,19 @@ export default class Palette extends Evented {
 	SetColor(clss, color) {
 		clss.color = color;
 		
-		this.Emit("Change", { palette:this });
+		this.Emit("Change", { palette:this, class:clss });
 	}
 	
 	SetStart(clss, value) {
 		clss.start = value;
 		
-		this.Emit("Change", { palette:this });
+		this.Emit("Change", { palette:this, class:clss });
 	}
 	
 	SetEnd(clss, value) {
 		clss.end = value;
 		
-		this.Emit("Change", { palette:this });
+		this.Emit("Change", { palette:this, class:clss });
 	}
 	
 	Save() {
