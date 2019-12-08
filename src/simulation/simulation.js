@@ -3,7 +3,6 @@
 import Evented from '../components/evented.js';
 import Array from '../utils/array.js';
 import Palette from './palettes/basic.js';
-import Selection from './selection.js';
 import State from './state.js';
 import Cache from './cache.js';
 import Frame from './frame.js';
@@ -15,26 +14,31 @@ export default class Simulation extends Evented {
 	get Palette() { return this.palette; }
 		
 	get State() { return this.state; }
+
+	get Selected() { return this.selected; }
 	
-	get Selection() { return this.selection; }
-		
 	constructor() {
 		super();
 		
 		this.frames = [];
 		this.index = {};
+		this.models = [];
+		this.selected = [];
 		
 		this.name = null;
 		this.files = null;
-		this.size = null;
 		this.simulator = null;
 		this.nFrames = null;
 		this.lastFrame = null;
 		
 		this.state = null;
+		this.palette = null;
+		this.info = null;
+		
 		this.palette = new Palette();
-		this.selection = new Selection();
 		this.cache = new Cache();
+		
+		this.size = 0;
 	}
 	
 	Initialize(info, settings) {
@@ -43,23 +47,15 @@ export default class Simulation extends Evented {
 		this.files = info.files;
 		this.lastFrame = info.lastFrame;
 		this.nFrames = info.nFrames;
-		
-		if (!this.size) this.size = this.DefaultSize();
-		
+				
 		this.BuildCache(settings.Cache);
 		this.BuildDifferences();
 		
 		this.state = this.cache.First();
 	}
 	
-	DefaultSize() {
-		var t = this.FirstFrame().Last();
-		
-		return { x:t.X + 1, y:t.Y + 1, z:t.Z + 1 };
-	}
-	
 	BuildCache(nCache) {
-		var zero = State.Zero(this.size);
+		var zero = State.Zero(this.models);
 		
 		this.cache.Build(nCache, this.frames, zero);
 		
@@ -67,7 +63,7 @@ export default class Simulation extends Evented {
 	}
 	
 	BuildDifferences() {		
-		var state = State.Zero(this.size);
+		var state = State.Zero(this.models);
 		
 		Array.ForEach(this.frames, function(f) { f.Difference(state); })
 	}
@@ -90,12 +86,12 @@ export default class Simulation extends Evented {
 		return this.frames[this.state.i];
 	}
 	
-	AddFrame(id, time) {		
-		var n = this.frames.push(new Frame(id, time));
+	AddFrame(frame) {		
+		this.frames.push(frame);
 		
-		this.index[id] = this.frames[n - 1];
+		this.index[frame.time] = frame;
 		
-		return this.frames[n - 1];
+		return frame;
 	}
 	
 	Frame(i) {
@@ -148,7 +144,7 @@ export default class Simulation extends Evented {
 	Save() {
 		return {
 			i : this.state.i,
-			selection : this.selection.Save(),
+			selection : this.selected,
 			palette : this.palette.Save()
 		}
 	}
@@ -156,13 +152,45 @@ export default class Simulation extends Evented {
 	Load(config) {
 		this.GoToFrame(config.i);
 		
-		this.selection.Load(config.selection);
+		this.selected = config.selection;
 		this.palette.Load(config.palette);
 		
 		this.Emit("Session", { simulation:this });
 	}
 	
+	LoopOnSize(delegate) {
+		for (var i = 0; i < this.size; i++) {
+			delegate(i);
+		}
+	}
+	
 	onSimulation_Error(message) {
 		this.Emit("Error", { error:new Error(message) });
+	}
+	
+	IsSelected(model) {
+		return this.selected.indexOf(model) > -1;
+	}
+	
+	Select(model) {
+		var idx = this.selected.indexOf(model);
+		
+		// Already selected
+		if (idx != -1) return;
+		
+		this.selected.push(model);
+		
+		this.Emit("Selected", { model:model, selected:true });
+	}
+	
+	Deselect(model) {
+		var idx = this.selected.indexOf(model);
+		
+		// Not in current selection
+		if (idx == -1) return;
+		
+		this.selected.splice(idx, 1);
+		
+		this.Emit("Selected", { model:model, selected:false });
 	}
 }

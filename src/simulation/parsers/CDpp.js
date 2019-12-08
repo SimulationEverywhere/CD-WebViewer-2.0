@@ -4,10 +4,11 @@ import Lang from '../../utils/lang.js';
 import Array from '../../utils/array.js';
 import Sim from '../../utils/sim.js';
 import Frame from '../frame.js';
+import TransitionCA from '../transitionCA.js';
 import State from '../state.js';
 import Parser from "./parser.js";
 import Palette from '../palettes/basic.js';
-import Simulation from '../simulation.js';
+import SimulationCA from '../simulationCA.js';
 import ChunkReader from '../../components/chunkReader.js';
 
 export default class CDpp extends Parser { 
@@ -15,31 +16,41 @@ export default class CDpp extends Parser {
 	constructor(files) {
 		super(files);
 		
-		this.val = new Frame("val", [0,0,0,0]);
-		this.ma = new Frame("ma", [0,0,0,0]);
+		this.val = new Frame("00:00:00:000");
+		this.ma = new Frame("00:00:00:000");
 	}
 	
 	IsValid() {
 		var d = Lang.Defer();
-		var log = Array.Find(this.files, function(f) { return f.name.match(/.log/i); });
+		var log = Array.Find(this.files, function(f) { return f.name.match(/\.log/i); });
+		var ma = Array.Find(this.files, function(f) { return f.name.match(/\.ma/i); });
 		
-		if (!log) d.Resolve(false);
-			
+		// TODO : This should reject
+		if (!log || !ma) {
+			d.Resolve(false);
+		
+			return d.promise;
+		}
+		
 		var r = new ChunkReader();
 		
-		r.ReadChunk(log.raw, 200).then((ev) => d.Resolve(ev.result.indexOf("Mensaje ") >= 0));
+		r.ReadChunk(ma, 200).then((ev) => { 
+			var type = ev.result.match(/type\s*:\s*(.+)/);
+
+			d.Resolve(type && type[1] == "cell");
+		});
 		
 		return d.promise;
 	}
 	
 	Parse(files, settings) {
 		var d = Lang.Defer();
-		var simulation = new Simulation();
+		var simulation = new SimulationCA();
 		
-		var val = Array.Find(files, function(f) { return f.name.match(/.val/i); });
-		var pal = Array.Find(files, function(f) { return f.name.match(/.pal/i); });
-		var ma = Array.Find(files, function(f) { return f.name.match(/.ma/i); });
-		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
+		var val = Array.Find(files, function(f) { return f.name.match(/\.val/i); });
+		var pal = Array.Find(files, function(f) { return f.name.match(/\.pal/i); });
+		var ma = Array.Find(files, function(f) { return f.name.match(/\.ma/i); });
+		var log = Array.Find(files, function(f) { return f.name.match(/\.log/i); });
 		
 		var p1 = Sim.ParseFile(val, this.ParseValFile.bind(this, simulation));
 		var p2 = Sim.ParseFile(pal, this.ParsePalFile.bind(this, simulation));
@@ -52,18 +63,23 @@ export default class CDpp extends Parser {
 			var f = this.MergeFrames(this.ma, this.val);
 			
 			if (f.transitions.length > 0) {
-				f.id = "00:00:00:000";
+				f.time = "00:00:00:000";
 				simulation.frames.unshift(f);
-				simulation.index[f.id] = f;
+				simulation.index[f.time] = f;
 			}
 			
 			var info = {
-				simulator : "CD++",
+				simulator : "CDpp",
 				name : log.name.replace(/\.[^.]*$/, ''),
 				files : files,
-				lastFrame : simulation.LastFrame().id,
+				lastFrame : simulation.LastFrame().time,
 				nFrames : simulation.frames.length
 			}
+		
+			// Build models array from size
+			simulation.LoopOnSize((x,y,z) => { 
+				simulation.models.push(TransitionCA.CoordToId([x,y,z]));
+			});
 			
 			simulation.Initialize(info, settings);
 		
@@ -83,7 +99,7 @@ export default class CDpp extends Parser {
 			}
 			
 			// frame 1 doesn't have transition id from frame 2, add it
-			else f1.AddTransition(t2.coord, t2.value, t2.diff);
+			else f1.AddTransition(t2);
 		});
 		
 		return f1;
@@ -100,16 +116,11 @@ export default class CDpp extends Parser {
 			
 			if (cI == -1|| cJ == -1 || vI == -1) return; // invalid line
 			
+			var split = line.substring(cI + 1, cJ).split(',');
+			var coord = this.GetCoord(split);
 			var v = parseFloat(line.substr(vI + 1));
 			
-			// 2D or 3D?
-			var split = line.substring(cI + 1, cJ).split(',');
-						
-			var y = parseInt(split[0], 10); // Y coord
-			var x = parseInt(split[1], 10); // X coord
-			var z = parseInt(split.length == 3 ? split[2] : 0, 10); // Z coord
-
-			this.val.AddTransition({ x:x++, y:y++, z:z++ }, v);
+			this.val.AddTransition(new TransitionCA(coord, v));
 		}.bind(this));
 	}
 	
@@ -126,10 +137,10 @@ export default class CDpp extends Parser {
 			
 			dim = [raw_h[1], raw_w[1]];
 		}
-			
+		
 		if (dim.length == 2) dim.push(1);
 		
-		simulation.size = { x:+dim[1], y:+dim[0], z:+dim[2] };
+		simulation.size = [+dim[1], +dim[0], +dim[2]];
 		
 		var global = this.GlobalFrame(simulation, file);
 		var rows = this.RowsFrame(file);
@@ -138,24 +149,20 @@ export default class CDpp extends Parser {
 	}
 	
 	GlobalFrame(simulation, file) {
-		var f = new Frame("global", [0,0,0,0]);
+		var f = new Frame("00:00:00:000");
 		var raw = file.match(/initialvalue\s*:\s*(.+)/);
 		
 		if (!raw || raw[1] == "0") return f;
 		
-		for (var x = 0; x < simulation.size.x; x++) { 
-			for (var y = 0; y < simulation.size.y; y++) { 
-				for (var z= 0; z < simulation.size.z; z++) { 
-					f.AddTransition({ x:x, y:y, z:z }, +raw[1]);
-				}
-			}
-		}
+		simulation.LoopOnSize((x,y,z) => {  
+			f.AddTransition(new TransitionCA([x, y, z], +raw[1]));
+		});
 		
 		return f;
 	}
 	
 	RowsFrame(file) {
-		var f = new Frame("rows", [0,0,0,0]);
+		var f = new Frame("00:00:00:000");
 		var raw = file.matchAll(/initialrowvalue\s*:\s*(.+)/g);
 		
 		if (!raw) return f;
@@ -168,8 +175,8 @@ export default class CDpp extends Parser {
 				var v = +values[x];
 				
 				if (v == 0) continue;
-				
-				f.AddTransition({ x:+x, y:+d[0], z:0 }, v);
+					
+				f.AddTransition(new TransitionCA([x, y, z], v));
 			}
 		}
 		
@@ -264,22 +271,26 @@ export default class CDpp extends Parser {
 			
 			// TODO : Does this ever happen?
 			if (c.length < 2) return;
-
-			var coord = { x:parseInt(c[1],10), y:parseInt(c[0],10), z:parseInt(c.length==3 ? c[2] : 0, 10) }
 			
-			// Parse state value
-			var v = parseFloat(split[4]);
+			// Parse coordinates, state value & frame timestamp
+			var coord = this.GetCoord(c);
+			var val = parseFloat(split[4]);
+			var fId = split[1].trim();
+						
+			var f = simulation.Index(fId) || simulation.AddFrame(new Frame(fId));
 			
-			// Parse Timestamp
-			var idx = split[1].trim();
-			
-			var time = Array.Map(idx.split(":"), function(t) { return +t; });
-			
-			var f = simulation.Index(idx) || simulation.AddFrame(idx, time);
-			
-			f.AddTransition(coord, v);
-		});
+			f.AddTransition(new TransitionCA(coord, val));
+		}.bind(this));
 		
 		this.Emit("Progress", { progress: progress });
+	}
+	
+	GetCoord(sCoord) {
+		// Parse coordinates
+		var x = parseInt(sCoord[1],10);
+		var y = parseInt(sCoord[0],10);
+		var z = parseInt(sCoord.length==3 ? sCoord[2] : 0, 10);
+		
+		return [x, y, z];
 	}
 }

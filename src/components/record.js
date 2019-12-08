@@ -36,6 +36,7 @@ export default class Recorder {
 	}
 	
 	Download(name) {
+		// TODO : check if can use net.Download
 		if (this.chunks.length == 0) return;
 		
 		var blob = new Blob(this.chunks, { type: 'video/webm' });

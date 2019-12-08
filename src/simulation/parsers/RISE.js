@@ -3,8 +3,9 @@
 import Lang from '../../utils/lang.js';
 import Array from '../../utils/array.js';
 import Sim from '../../utils/sim.js';
-import Simulation from '../simulation.js';
+import SimulationCA from '../simulationCA.js';
 import Frame from '../frame.js';
+import TransitionCA from '../transitionCA.js';
 import Parser from "./parser.js";
 import ChunkReader from '../../components/chunkReader.js';
 
@@ -16,22 +17,26 @@ export default class RISE extends Parser {
 	
 	IsValid() {		
 		var d = Lang.Defer();
-		var log = Array.Find(this.files, function(f) { return f.name.match(".log"); });
+		var log = Array.Find(this.files, function(f) { return f.name.match(/\.log/i); });
 		
-		if (!log) d.Resolve(null);
-			
+		if (!log) {
+			d.Resolve(null);
+		
+			return d.promise;
+		}
+		
 		var r = new ChunkReader();
 		
-		r.ReadChunk(log.raw, 200).then((ev) =>  d.Resolve(ev.result.indexOf("0 / L / ") >= 0));
+		r.ReadChunk(log, 200).then((ev) =>  d.Resolve(ev.result.indexOf("0 / L / ") >= 0));
 		
 		return d.promise;
 	}
 	
 	Parse(files, settings) {
 		var d = Lang.Defer();
-		var simulation = new Simulation();
+		var simulation = new SimulationCA();
 		
-		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
+		var log = Array.Find(files, function(f) { return f.name.match(/\.log/i); });
 
 		var p = Sim.ParseFileByChunk(log, this.ParseLogChunk.bind(this, simulation));
 			
@@ -39,12 +44,22 @@ export default class RISE extends Parser {
 	
 		Promise.all(defs).then((data) => {
 			var info = {
-				simulator : "RISE",
+				simulator : "Lopez",
 				name : log.name.replace(/\.[^.]*$/, ''),
 				files : files,
 				lastFrame : simulation.LastFrame().id,
 				nFrames : simulation.frames.length
 			}
+			
+			// TODO : This likely doesn't work in all cases
+			var t = simulation.FirstFrame().Last();
+			
+			simulation.size = [t.X + 1, t.Y + 1, t.Z + 1];
+			
+			// Build models array from size
+			simulation.LoopOnSize((x,y,z) => { 
+				simulation.models.push(TransitionCA.CoordToId([x,y,z]));
+			});
 			
 			simulation.Initialize(info, settings);
 		
@@ -80,22 +95,26 @@ export default class RISE extends Parser {
 			
 			// TODO : Does this ever happen?
 			if (c.length < 2) return;
-
-			var coord = { x:parseInt(c[1],10), y:parseInt(c[0],10), z:parseInt(c.length==3 ? c[2] : 0, 10) }
 			
-			// Parse state value
+			// Parse coordinates, state value, timestamp used as id
+			var coord = this.GetCoord(c);
 			var v = parseFloat(split[6]);
+			var fId = split[3].trim();
 			
-			// Parse Timestamp
-			var idx = split[3].trim();
+			var f = simulation.Index(fId) || simulation.AddFrame(new Frame(fId));
 			
-			var time = Array.Map(idx.split(":"), function(t) { return +t; });
-			
-			var f = simulation.Index(idx) || simulation.AddFrame(idx, time);
-			
-			f.AddTransition(coord, v);
-		});
+			f.AddTransition(new TransitionCA(coord, v));
+		}.bind(this));
 		
 		this.Emit("Progress", { progress: progress });
+	}
+	
+	GetCoord(sCoord) {
+		// Parse coordinates
+		var x = parseInt(sCoord[1],10);
+		var y = parseInt(sCoord[0],10);
+		var z = parseInt(sCoord.length==3 ? sCoord[2] : 0, 10);
+		
+		return [x, y, z];
 	}
 }

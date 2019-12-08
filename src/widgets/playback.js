@@ -33,7 +33,7 @@ export default Lang.Templatable("Widget.Playback", class Playback extends Widget
 		
 		this.simulation.On("Session", this.onSimulationSession_Handler.bind(this));
 		
-		this.values = this.simulation.frames.map((f) => { return f.id; });
+		this.values = this.simulation.frames.map((f) => { return f.time; });
 		
 		this.min = 0;
 		this.max = this.values.length - 1;
