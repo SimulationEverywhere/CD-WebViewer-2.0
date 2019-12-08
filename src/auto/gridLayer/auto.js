@@ -6,14 +6,14 @@ import Dom from '../../utils/dom.js';
 import Tooltip from '../../ui/tooltip.js';
 import Grid from './grid.js';
 import Automated from '../automated.js';
-// import Recorder from '../../components/record.js';
+import Recorder from '../../components/record.js';
 
 export default Lang.Templatable("Auto.Grid", class AutoGrid extends Automated { 
 
 	constructor(config, simulation) {
 		super(new Grid(), simulation);
 		
-		// this.recorder = new Recorder(this.Widget.Canvas);
+		this.recorder = new Recorder(this.Widget.Canvas);
 
 		this.z = config.z;
 		
