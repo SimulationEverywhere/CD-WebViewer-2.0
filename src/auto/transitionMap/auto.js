@@ -8,7 +8,7 @@ import Grid from '../gridLayer/grid.js';
 import Automated from '../automated.js';
 import State from '../../simulation/state.js';
 import Frame from '../../simulation/frame.js';
-import TransitionCA from '../../simulation/TransitionCA.js';
+import TransitionCA from '../../simulation/transitionCA.js';
 import Palette from '../../simulation/palettes/gradient.js';
 
 export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap extends Automated { 
