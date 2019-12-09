@@ -49,7 +49,7 @@ export default Lang.Templatable("Widget.Selector", class Selector extends Widget
 	
 	onLoadClick_Handler(ev) {
 		if (!this.current) return;
-				
+			
 		this.Emit("Load", { definition:this.current.definition, configurator:this.current.configurator  });
 	}
 	

@@ -17,6 +17,8 @@ export default class Simulation extends Evented {
 
 	get Selected() { return this.selected; }
 	
+	get SVG() { return this.svg; }
+
 	constructor() {
 		super();
 		
@@ -25,6 +27,7 @@ export default class Simulation extends Evented {
 		this.models = [];
 		this.selected = [];
 		
+
 		this.name = null;
 		this.files = null;
 		this.simulator = null;

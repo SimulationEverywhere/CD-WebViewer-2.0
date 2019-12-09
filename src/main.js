@@ -70,7 +70,8 @@ export default class Main extends Widget {
 	}
 	
 	onControlSave_Handler() {
-		Net.Download(this.simulation.Info.Name + ".json", this.session.Save());
+		
+		Net.Download(this.simulation.name + ".json", this.session.Save());
 	}
 	
 	SetWidgetInCell(cell, definition, configuration) {

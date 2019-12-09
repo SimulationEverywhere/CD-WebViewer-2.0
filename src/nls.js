@@ -28,6 +28,7 @@ var nls = {
 	"Main_Load" : {
 		"en" : "Load Simulation"
 	},
+
 	"Info_Title" : {
 		"en" : "Information"
 	},
@@ -78,6 +79,9 @@ var nls = {
 	},
 	"Playback_Play" : {
 		"en" : "Play forward"
+	},
+	"Tooltip_control" : {
+		"en" : "How Control Works"
 	},
 	"Playback_StepForward" : {
 		"en" : "Step forward"
@@ -231,6 +235,36 @@ var nls = {
 	},
 	"Main_Unsupported_Browser" : {
 		"en" : "This application is for the Chrome browser. It requires many features that are not supported by other browsers."
+	},
+	"Addiction-model" : {
+	"en" : "This is the desciption of Addiction-model"	
+	},
+	"CO2-model" : {
+	"en" : "This is the desciption of Addiction-model"	
+	},
+	"Fire-model" : {
+	"en" : "This is the desciption of Fire-model"	
+	},
+	"Rain-model" : {
+	"en" : "This is the desciption of Fire and Rain-model"	
+	},
+	"Life-model" : {
+	"en" : "This is the desciption of Life-model"	
+	},
+	"LogisticUrban-model" : {
+	"en" : "This is the desciption of Logistic Urban Growth Model"	
+	},
+	"Swarm-model" : {
+	"en" : "This is the desciption of Swarm Model"	
+	},
+	"Tumor-model" : {
+	"en" : "This is the desciption of Tumor-model"	
+	},
+	"UAV-model" : {
+	"en" : "This is the desciption of UAV-model"	
+	},
+	"Worm-model" : {
+	"en" : "This is the desciption of Worm-model"	
 	}
 }
 

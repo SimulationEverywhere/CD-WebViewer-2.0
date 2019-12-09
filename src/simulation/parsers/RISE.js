@@ -22,7 +22,7 @@ export default class RISE extends Parser {
 		if (!log) d.Resolve(null);
 			
 		var r = new ChunkReader();
-		
+		//if(log)
 		r.ReadChunk(log, 200).then((ev) =>  d.Resolve(ev.result.indexOf("0 / L / ") >= 0));
 		
 		return d.promise;

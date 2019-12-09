@@ -210,9 +210,20 @@ img.palette {
 	flex-wrap:initial;
     justify-content: center;
 }
-
+ 
 .control .row.row-0 {
     justify-content: center;
+} 
+.control .row.row-0-0 {
+   display: flex;
+  justify-content: flex-end;
+} 
+
+.control .row.row-0-0 button{
+  
+  margin: 5px;
+  text-align: center;
+  
 } 
 
 .control .row.row-0 i {
@@ -487,9 +498,27 @@ img.palette {
     padding: 0px;
 }
 
+.rise-column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.rise-row{
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+
 ul {
+
     margin: 0;
     padding: 0;
+    
+  
 }
   
 ul li {
@@ -505,7 +534,11 @@ ul li {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+   display:  flex;
+     justify-content:space-between;
 }
+
+
   
   /* Set all odd list items to a different color (zebra-stripes) */
 ul li:nth-child(odd) {

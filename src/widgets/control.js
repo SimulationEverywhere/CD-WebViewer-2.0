@@ -12,6 +12,7 @@ import Settings from './settings.js';
 import Palette from './palette.js';
 import Playback from './playback.js';
 import RiseList from './riseList.js';
+import Tooltip from '../ui/tooltip.js';
 
 const BG_NORMAL = "var(--color-5)";
 const BG_DISABLED = "var(--color-7)";
@@ -38,6 +39,8 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.Node("palette").addEventListener("click", this.onPaletteClick_Handler.bind(this));
 		this.Node("rise").addEventListener("click", this.onRiseListClick_Handler.bind(this));
 		this.Node("dropzone").On("Change", this.onDropzoneChange_Handler.bind(this));
+		this.Node("tooltip").addEventListener("mousemove", this.onTooltipOver_Handler.bind(this));
+		this.Node("tooltip").addEventListener("mouseout", this.onTooltipOut_Handler.bind(this));
 		
 		this.popups = {
 			palette : new Popup(),
@@ -50,6 +53,13 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.popups.rise.Node("title").innerHTML = Lang.Nls("Control_RiseList");
 		this.popups.rise.Widget = new RiseList();
 		this.popups.rise.Widget.On("FilesReady", this.onRiseModelReady_Handler.bind(this));
+		this.BuildTooltip();
+	}
+
+	BuildTooltip() {
+		this.tooltip = new Tooltip(document.body);
+		
+		this.tooltip.nodes.label = Dom.Create("div", { className:"tooltip-label" }, this.tooltip.Node("content"));
 	}
 	
 	LoadSimulation(simulation) {
@@ -96,7 +106,19 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 
 		Sim.DetectParser(ev.files).then(success, failure);
 	}
+	onTooltipOver_Handler(ev)
+	{
+		
+		this.tooltip.nodes.label.innerHTML = Lang.Nls("Tooltip_control");
 	
+		this.tooltip.Show(ev.x + 20, ev.y);
+	}
+
+	onTooltipOut_Handler(ev)
+	{
+		this.tooltip.Hide();
+	}
+
 	onDropzoneChange_Handler(ev) {
 		this.files = ev.files;
 		
@@ -106,6 +128,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		var failure = this.onError_Handler.bind(this);
 		
 		Sim.DetectParser(ev.files).then(success, failure);
+		//console.log(ev.files);
 	}
 	
 	onParserDetected_Handler(ev) {
@@ -117,6 +140,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		var failure = this.onError_Handler.bind(this);
 		
 		Sim.ParseFile(json, (d) => { return JSON.parse(d); }).then(success, failure);
+		
 	}
 	
 	onConfigParsed_Handler(ev) {
@@ -174,12 +198,19 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.SetCollapsed(config.collapsed);
 	}
 
+
 	Template() {
 		return "<div class='control row'>" +
 				  "<div class='dash-box'>" +
+				   "<div class='row row-0-0'>" +
+					 "<button ><a handle='tooltip' data-toggle='tooltip' >?</a></button>" +
+						 
+					  "</div>" +
 					  "<div class='row row-0'>" +
 						 "<button handle='min' class='collapse'><i handle='icon' class='fas fa-caret-up'></i></button>" +
+						 
 					  "</div>" +
+					  
 
 					  "<div class='row row-1'>" +
 						  "<div handle='rise' class='rise'>" +

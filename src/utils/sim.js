@@ -13,8 +13,9 @@ export default class Sim {
 	static DetectParser(files) {		
 		var d = Lang.Defer();
 		var parsers = PARSERS.map(p => new p(files));
+	
 		var defs = parsers.map(p => p.IsValid());
-		
+	
 		Promise.all(defs).then(function(results) {
 			var valids = results.filter(r => r.result);
 			

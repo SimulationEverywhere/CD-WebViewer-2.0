@@ -29,7 +29,7 @@ export default class CDpp extends Parser {
 		if (!log || !ma) d.Resolve(false);
 			
 		var r = new ChunkReader();
-		
+		//if(log && ma)
 		r.ReadChunk(ma, 200).then((ev) => { 
 			var type = ev.result.match(/type\s*:\s*(.+)/);
 

@@ -32,6 +32,7 @@ export default Lang.Templatable("Config.DevsDiagram", class ConfigDevsDiagram ex
 		Dom.SetCss(this.Node("icon"), css);
 		
 		var p = Sim.ParseFile(svg, (d) => { this.svg = d; });
+
 	}
 
 	onError_Handler(ev) {

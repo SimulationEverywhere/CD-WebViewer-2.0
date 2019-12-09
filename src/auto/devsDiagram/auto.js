@@ -13,9 +13,14 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 	constructor(config, simulation) {
 		super(new Diagram(), simulation);
 		
-		this.Widget.SetSVG(config.svg);
 		
-		this.svg = config.svg;
+		if(config.svg)
+			this.svg = config.svg;
+		if(!config.svg)
+			this.svg=this.Simulation.svg;
+
+		this.Widget.SetSVG(this.svg);
+		
 		this.selected = [];
 
 		var h1 = this.Widget.On("MouseMove", this.onMouseMove_Handler.bind(this));
@@ -58,6 +63,7 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 		};
 		
 		this.Widget.Data(data);
+		
 	}
 
 	onSimulationMove_Handler(ev) {	

@@ -13,7 +13,12 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	
 	SetSVG(svg) {
 		this.Node('diagram').innerHTML = svg;
-
+		this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("width", "100%");
+			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("height", "100%");
+			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("viewbox", "0 0 560 340"); // as per the cell dimesions 
+			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("preserveAspectRatio", "none");
+			this.Node("diagram").getElementsByTagName("title").hidden = true;
+			
 		var models = this.Node('diagram').querySelectorAll("[model]");
 		
 		this.models = {};
@@ -36,7 +41,7 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	
 	onSvgMouseMove_Handler(ev) {
 		var model = ev.target.getAttribute('model');
-	
+		
 		this.Emit("MouseMove", { x:ev.pageX, y:ev.pageY , model:model });
 	}
 		
@@ -51,12 +56,14 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	}
 		
 	DrawModel(model, fill, stroke, width) {
+
 		if (fill) model.svg.setAttribute('fill', fill);
 		if (stroke) model.svg.setAttribute('stroke', stroke);
 		if (width) model.svg.setAttribute('stroke-width', width);
 	}
 	
 	ResetModel(model) {
+
 		model.svg.setAttribute('fill', model['fill']);
 		model.svg.setAttribute('stroke', model['stroke']);
 		model.svg.setAttribute('stroke-width', model['stroke-width']);
@@ -95,10 +102,11 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 		Array.ForEach(transitions, function(t) {
 			var m = this.models[t.id];
 			
+	
 			if (!m) return;
 		
 			// TODO : style should come from auto wrapper.
-			this.DrawModel(m, 'LightSeaGreen', null, 3.0);
+			this.DrawModel(m, 'LightSeaGreen', null, 4.0);
 		}.bind(this));
 	}
 

@@ -23,7 +23,7 @@ export default class ChunkReader extends Evented {
 		if (this.defer) throw new Error("FileReader is in use");
 		
 		this.defer = Lang.Defer();
-		
+		if(file)
 		this.fileReader.readAsText(file);
 		
 		return this.defer.promise;
@@ -31,6 +31,7 @@ export default class ChunkReader extends Evented {
 	
 	ReadChunk(file, size) {
 		var size = size || CHUNK_SIZE;
+		if(file)
 		var chunk = file.slice(this.position, this.position + size);
 		
 		return this.Read(chunk);
