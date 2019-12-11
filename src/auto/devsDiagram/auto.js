@@ -88,7 +88,7 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 	
 	onClick_Handler(ev) {
 		var idx = this.selected.indexOf(ev.model);
-		
+
 		// TODO : Selection should be handled by diagram, not auto class
 		if (idx == -1) {
 			this.selected.push(ev.model);

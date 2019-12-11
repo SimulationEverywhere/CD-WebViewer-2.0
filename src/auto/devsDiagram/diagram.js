@@ -52,7 +52,7 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	onSvgClick_Handler(ev) {
 		var model = ev.target.getAttribute('model');
 		
-		this.Emit("Click", { x:ev.pageX, y:ev.pageY , model:this.models[model] });
+		this.Emit("Click", { x:ev.pageX, y:ev.pageY , model:this.models[model] ,modelid:model});
 	}
 		
 	DrawModel(model, fill, stroke, width) {
@@ -94,6 +94,7 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	}
 
 	DrawChanges(state) {
+
 		for (var id in this.models) this.ResetModel(this.models[id]);
 		
 		//TO DRAW INITIAL STATE AFTER SHOWING THE CHANGES.
@@ -108,6 +109,7 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 			// TODO : style should come from auto wrapper.
 			this.DrawModel(m, 'LightSeaGreen', null, 4.0);
 		}.bind(this));
+	
 	}
 
 	Data(data) {
