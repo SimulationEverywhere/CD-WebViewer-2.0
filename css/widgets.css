@@ -212,16 +212,17 @@ img.palette {
 }
  
 .control .row.row-0 {
-    justify-content: center;
-} 
-.control .row.row-0-0 {
-   display: flex;
-  justify-content: flex-end;
+    padding:  5px 5px ;
+    display: flex;
+    
+    justify-content: flex-end;
+ 
 } 
 
-.control .row.row-0-0 button{
+
+.control .row-0-0 {
+  margin-left: 320px;
   
-  margin: 5px;
   text-align: center;
   
 } 
@@ -510,7 +511,6 @@ img.palette {
   display: table;
   clear: both;
 }
-
 
 
 ul {

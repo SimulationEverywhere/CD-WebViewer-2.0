@@ -236,34 +236,34 @@ var nls = {
 	"Main_Unsupported_Browser" : {
 		"en" : "This application is for the Chrome browser. It requires many features that are not supported by other browsers."
 	},
-	"Addiction-model" : {
+	"Addiction Model" : {
 	"en" : "This is the desciption of Addiction-model"	
 	},
-	"CO2-model" : {
-	"en" : "This is the desciption of Addiction-model"	
+	"CO2 Model" : {
+	"en" : "This is the desciption of CO2-model"	
 	},
-	"Fire-model" : {
+	"Fire Model" : {
 	"en" : "This is the desciption of Fire-model"	
 	},
-	"Rain-model" : {
+	"Fire And Rain Model" : {
 	"en" : "This is the desciption of Fire and Rain-model"	
 	},
-	"Life-model" : {
+	"Life Model" : {
 	"en" : "This is the desciption of Life-model"	
 	},
-	"LogisticUrban-model" : {
+	"Logistic Urban Growth Model" : {
 	"en" : "This is the desciption of Logistic Urban Growth Model"	
 	},
-	"Swarm-model" : {
+	"Swarm Model" : {
 	"en" : "This is the desciption of Swarm Model"	
 	},
-	"Tumor-model" : {
+	"Tumor Model" : {
 	"en" : "This is the desciption of Tumor-model"	
 	},
-	"UAV-model" : {
+	"UAV Model" : {
 	"en" : "This is the desciption of UAV-model"	
 	},
-	"Worm-model" : {
+	"Worm Model" : {
 	"en" : "This is the desciption of Worm-model"	
 	}
 }

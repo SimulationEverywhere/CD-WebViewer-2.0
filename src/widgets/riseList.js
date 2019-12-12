@@ -21,44 +21,34 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
 		this.models = [
 			{
 				"name": "Addiction Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Addiction/Addiction.zip",
-				"handle" : "Addiction-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Addiction/Addiction.zip"
 			}, {
 				"name": "CO2 Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/CO2/CO2.zip",
-				"handle" : "CO2-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/CO2/CO2.zip"
 			}, {
 				"name": "Fire Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Fire/Fire.zip",
-				"handle" : "Fire-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Fire/Fire.zip"
 			}, {
 				"name": "Fire And Rain Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Fire And Rain/FireAndRain.zip",
-				"handle" : "Rain-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Fire And Rain/FireAndRain.zip"
 			}, {
 				"name": "Life Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Life/2/2.zip",
-				"handle" : "Life-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Life/2/2.zip"
 			}, {
 				"name": "Logistic Urban Growth Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Logistic Urban Growth/4/4.zip",
-				"handle" : "LogisticUrban-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Logistic Urban Growth/4/4.zip"
 			}, {
 				"name": "Swarm Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Swarm/Swarm.zip",
-				"handle" : "Swarm-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Swarm/Swarm.zip"
 			}, {
 				"name": "Tumor Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Tumor/Tumor.zip",
-				"handle" : "Tumor-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Tumor/Tumor.zip"
 			}, {
 				"name": "UAV Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/UAV/UAV.zip",
-				"handle" : "UAV-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/UAV/UAV.zip"
 			}, {
 				"name": "Worm Model",
-				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Worm/Worm.zip",
-				"handle" : "Worm-model"
+				"url": "http://localhost/Dev/CD-WebViewer-2.0/log/Worm/Worm.zip"
 			}
 		]
 		
@@ -69,31 +59,26 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
     }
 
 	BuildTooltip() {
-		this.tooltip = new Tooltip(document.body);
-		
-		this.tooltip.nodes.label = Dom.Create("div", { className:"tooltip-label" }, this.tooltip.Node("content"));
+		this.tooltip = new Tooltip(this.Node('popup-list'));
+		this.tooltip.nodes.label = Dom.Create("div", { className:"tooltip-label" },  this.tooltip.Node("content"));
 	}
 
 	AddModel(model) {
 		var li = Dom.Create("li", { className:'model' }, this.Node('list'));
-		li.setAttribute("handle", "li");
-		var button = document.createElement("button");// "<button ><a handle='tooltip' data-toggle='tooltip' >?</a></button>"
 		li.innerHTML = model.name;
-		li.appendChild(button);
-		button.innerHTML='?';
-		button.setAttribute("handle", model.handle);
+		
 		li.addEventListener("click", this.onLiModelClick_Handler.bind(this, model));
-		button.addEventListener("mousemove", this.onTooltipOver_Handler.bind(this, model));
-		button.addEventListener("mouseout", this.onTooltipOut_Handler.bind(this, model));
+		li.addEventListener("mousemove", this.onTooltipOver_Handler.bind(this, model));
+		li.addEventListener("mouseout", this.onTooltipOut_Handler.bind(this, model));
 		
 	}
 
 	onTooltipOver_Handler(model, ev){
-		var subs = model.handle;
+		var subs = model.name;
 		
-		this.tooltip.nodes.label.innerHTML = Lang.Nls(model.handle, subs);
+		this.tooltip.nodes.label.innerHTML = Lang.Nls(model.name, subs);
 	
-		this.tooltip.Show(ev.x + 20, ev.y);
+		this.tooltip.Show(ev.x -300, ev.y-150);
 	}
 
 	onTooltipOut_Handler(model, ev){
@@ -149,6 +134,6 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
 	}
 
     Template(){
-        return "<ul handle='list'></ul>" ;
+        return "<div handle = 'popup-list'><ul handle='list'></ul></div>" ;
     }
 });

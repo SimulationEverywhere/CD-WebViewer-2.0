@@ -202,13 +202,10 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	Template() {
 		return "<div class='control row'>" +
 				  "<div class='dash-box'>" +
-				   "<div class='row row-0-0'>" +
-					 "<button ><a handle='tooltip' data-toggle='tooltip' >?</a></button>" +
-						 
-					  "</div>" +
+				   
 					  "<div class='row row-0'>" +
 						 "<button handle='min' class='collapse'><i handle='icon' class='fas fa-caret-up'></i></button>" +
-						 
+						 "<button class='row-0-0' ><a handle='tooltip' data-toggle='tooltip' >?</a></button>" +
 					  "</div>" +
 					  
 

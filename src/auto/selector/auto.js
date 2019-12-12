@@ -77,7 +77,12 @@ export default Lang.Templatable("Auto.Selector", class AutoSelector extends Auto
 	}
 	
 	onWidgetLoad_Handler(ev) {
-		this.Emit("Load", { definition:ev.definition, configurator:ev.configurator  });
+		
+		if(ev.configurator.name=='ConfigDevsDiagram'){
+			this.Emit("Load", { definition:ev.definition  });
+		}
+		else
+			this.Emit("Load", { definition:ev.definition, configurator:ev.configurator  });
 	}
 	
 	Widgets(simulator) {

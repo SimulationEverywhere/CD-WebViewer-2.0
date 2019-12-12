@@ -14,9 +14,9 @@ export default Lang.Templatable("Auto.DevsDiagram", class AutoDevsDiagram extend
 		super(new Diagram(), simulation);
 		
 		
-		if(config.svg)
-			this.svg = config.svg;
-		if(!config.svg)
+		//if(config.svg)
+		//	this.svg = config.svg;
+		//if(!config.svg)
 			this.svg=this.Simulation.svg;
 
 		this.Widget.SetSVG(this.svg);

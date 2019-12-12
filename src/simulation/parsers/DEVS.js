@@ -169,7 +169,7 @@ export default class DEVS extends Parser {
 			f.AddTransition(new Transition(id, v));
 		}.bind(this));
 		
-		
+		//console.log(simulation.frames);
 
 
 		this.Emit("Progress", { progress: progress });
