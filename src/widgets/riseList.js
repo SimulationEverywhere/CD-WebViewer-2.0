@@ -59,7 +59,8 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
     }
 
 	BuildTooltip() {
-		this.tooltip = new Tooltip(this.Node('popup-list'));
+		this.tooltip = new Tooltip(this.Node('list'));
+		this.tooltip.className="tooltip_riselist";
 		this.tooltip.nodes.label = Dom.Create("div", { className:"tooltip-label" },  this.tooltip.Node("content"));
 	}
 
@@ -134,6 +135,6 @@ export default Lang.Templatable("Widget.RiseList", class RiseList extends Widget
 	}
 
     Template(){
-        return "<div handle = 'popup-list'><ul handle='list'></ul></div>" ;
+        return "<ul handle='list'></ul>" ;
     }
 });
