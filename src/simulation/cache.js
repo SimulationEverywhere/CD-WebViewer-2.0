@@ -10,10 +10,10 @@ export default class Cache {
 		this.states = [];
 	}
 	
-	Build(n, frames, models) {
+	Build(n, frames, zero) {
 		this.n = n;
 		
-		var state = State.Zero(models);
+		var state = zero;
 		
 		for (var i = 0; i < frames.length; i++) {
 			state.ApplyTransitions(frames[i]);

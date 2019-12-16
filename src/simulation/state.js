@@ -4,23 +4,23 @@ import Array from '../utils/array.js';
 
 export default class State { 
 
-	constructor(i, model) {
+	constructor(i, models) {
 		this.i = i;
-		this.model = model;
+		this.models = models;
 	}
 	
 	Clone(){
-		var clone = JSON.parse(JSON.stringify(this.model));
+		var clone = JSON.parse(JSON.stringify(this.models));
 
 		return new State(this.i, clone);
 	}
 	
 	GetValue(id) {
-		return this.model[id];
+		return this.models[id];
 	}
 	
 	SetValue(id, value) {
-		this.model[id] = value;
+		this.models[id] = value;
 	}
 	
 	ApplyTransitions(frame) {
@@ -42,13 +42,12 @@ export default class State {
 	}
 	
 	static Zero(models) {
-		var model = models;
-
-		for (var id in model) {
-			model[id] = 0;
-		}
-
+		var index = {};
+		
+		Array.ForEach(models, function(id) {
+			index[id] = 0;
+		});
 			
-		return new State(-1, model);
+		return new State(-1, index);
 	}
 }

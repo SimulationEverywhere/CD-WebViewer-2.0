@@ -11,7 +11,7 @@ import Info from './info.js';
 import Settings from './settings.js';
 import Palette from './palette.js';
 import Playback from './playback.js';
-import Simulation from '../simulation/simulation.js';
+import RiseList from './riseList.js';
 
 const BG_NORMAL = "var(--color-5)";
 const BG_DISABLED = "var(--color-7)";
@@ -27,6 +27,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	constructor(node) {		
 		super(node);
 		
+		this.files = null;
 		this.config = null;
 		this.parser = null;
 		this.collapsed = false;
@@ -35,26 +36,35 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.Node("min").addEventListener("click", this.onCollapseClick_Handler.bind(this));
 		this.Node("load").addEventListener("click", this.onLoadClick_Handler.bind(this));
 		this.Node("palette").addEventListener("click", this.onPaletteClick_Handler.bind(this));
+		this.Node("rise").addEventListener("click", this.onRiseListClick_Handler.bind(this));
 		this.Node("dropzone").On("Change", this.onDropzoneChange_Handler.bind(this));
 		
-		this.popup = new Popup();
+		this.popups = {
+			palette : new Popup(),
+			rise : new Popup()
+		}
 		
-		this.popup.Widget = new Palette();
+		Dom.AddCss(this.popups.rise.Node("root"), "popup-rise");
+		Dom.AddCss(this.popups.palette.Node("root"), "popup-palette");
 		
-		this.popup.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
+		this.popups.palette.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
+		this.popups.palette.Widget = new Palette();
+		
+		this.popups.rise.Node("title").innerHTML = Lang.Nls("Control_RiseList");
+		this.popups.rise.Widget = new RiseList();
+		this.popups.rise.Widget.On("ModelSelected", this.onRiseModelSelected_Handler.bind(this));
+		this.popups.rise.Widget.On("FilesReady", this.onRiseModelReady_Handler.bind(this));
 	}
 	
-	LoadSimulation(data) {
-		this.simulation = new Simulation();
+	LoadSimulation(simulation) {
+		this.simulation = simulation;
 		
 		this.simulation.On("Error", this.onError_Handler.bind(this));
 		
-		this.simulation.LoadData(this.Settings.Cache, data);
-		
-		this.popup.Widget.Initialize(this.simulation);
+		this.popups.palette.Widget.Initialize(this.simulation);
 		
 		this.Node("playback").Initialize(this.simulation, this.Settings);
-		this.Node("info").Initialize(this.simulation.info);	
+		this.Node("info").Initialize(this.simulation);	
 		
 		this.Node("load").disabled = false;
 		this.Node("dbSave").disabled = false;
@@ -74,8 +84,32 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		Dom.ToggleCss(this.container, "collapsed", this.collapsed);
 		Dom.SetCss(this.Node("icon"), icon);
 	}
+
+	onRiseListClick_Handler(){ 
+		this.popups.rise.Show();
+    }
+	
+	onRiseModelSelected_Handler(ev) {
+		this.popups.rise.Disable();
+	}
+	
+	onRiseModelReady_Handler(ev){
+		this.popups.rise.Enable();
+		
+		this.files = ev.files;
+		
+		this.popups.rise.Hide();
+		this.Node("playback").Stop();
+		
+		var success = this.onParserDetected_Handler.bind(this);
+		var failure = this.onError_Handler.bind(this);
+
+		Sim.DetectParser(ev.files).then(success, failure);
+	}
 	
 	onDropzoneChange_Handler(ev) {
+		this.files = ev.files;
+		
 		this.Node("playback").Stop();
 		
 		var success = this.onParserDetected_Handler.bind(this);
@@ -85,16 +119,14 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	}
 	
 	onParserDetected_Handler(ev) {
-		this.parser = ev.result.parser;
+		this.parser = ev.result;
 		
-		var fileList = this.Node("dropzone").files;
-		var name = `${this.parser.ModelName}.json`;
-		var file = Array.Find(fileList, function(f) { return f.name.match(name); });
+		var json = Array.Find(this.files, function(f) { return f.name.match(/.json/i); });
 		
 		var success = this.onConfigParsed_Handler.bind(this);
 		var failure = this.onError_Handler.bind(this);
 		
-		Sim.ReadFile(file, (d) => { return JSON.parse(d); }).then(success, failure);
+		Sim.ParseFile(json, (d) => { return JSON.parse(d); }).then(success, failure);
 	}
 	
 	onConfigParsed_Handler(ev) {
@@ -112,7 +144,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		
 		this.Node("playback").Stop();
 		
-		this.parser.Parse().then((ev) => { this.LoadSimulation(ev.result); });
+		this.parser.Parse(this.files, this.Settings).then((ev) => { this.LoadSimulation(ev.result); });
 	}
 	
 	onParserProgress_Handler(ev) {
@@ -137,11 +169,11 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		// TODO : Probably handle error here, alert message or something.
 		this.Node("dropzone").Reset();
 		
-		alert(ev.error.toString())
+		alert(ev.error.toString());
 	}
 	
 	onPaletteClick_Handler(ev) {
-		if (this.simulation) this.popup.Show();
+		if (this.simulation) this.popups.palette.Show();
 	}
 	
 	Save() {
@@ -160,6 +192,9 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 					  "</div>" +
 
 					  "<div class='row row-1'>" +
+						  "<div handle='rise' class='rise'>" +
+							"<i class='fas fa-cloud-download-alt'></i>" + 
+						  "</div>" +
 						  "<div handle='dropzone' class='dropzone' widget='Widget.Dropzone'></div>" +
 						  "<div handle='info' class='info' widget='Widget.Info'></div>" +
 						  "<div handle='settings' class='settings' widget='Widget.Settings'></div>" +

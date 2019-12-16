@@ -6,7 +6,6 @@ import Array from '../../utils/array.js';
 import Dom from '../../utils/dom.js';
 import Playback from '../../widgets/playback.js';
 import Widget from '../../ui/widget.js';
-import svg from '../../widgets/svg.js';
 	
 export default Lang.Templatable("Config.DevsDiagram", class ConfigDevsDiagram extends Widget { 
 
@@ -20,29 +19,30 @@ export default Lang.Templatable("Config.DevsDiagram", class ConfigDevsDiagram ex
 		var name = Lang.Nls("Widget_AutoDevsDiagram");
 
 		this.Node("title").innerHTML = Lang.Nls("Configurator_Title", [name]);
-		this.Node("svg").On("Change", this.onsvgChange_Handler.bind(this));
+		this.Node("inputsvg").addEventListener("change", this.OnInputSVG_Change.bind(this));
 	}
-
-	onsvgChange_Handler(ev) {
-
-		var file = this.Node("svg").files[0];	
 	
-		var p = Sim.ReadFile(file, (d) => { return d; });
+	OnInputSVG_Change(ev) {
+		var svg = Array.Find(ev.target.files, function(f) { return f.name.match(/.svg/i); });
+			
+		if (svg == null) return;
 		
-		p.then(file => { 
-			this.svg = file.result;
-		});
+		var css = (svg != null) ? "fas fa-thumbs-up" : "fas fa-exclamation-triangle";
+		
+		Dom.SetCss(this.Node("icon"), css);
+		
+		var p = Sim.ParseFile(svg, (d) => { this.svg = d; });
 	}
-	
-	
+
 	onError_Handler(ev) {
 		// TODO : Probably handle error here, alert message or something.
 		this.Node("svg").Reset();
 		
 		alert(ev.error.toString())
 	}
+	
 	onLoadClick_Handler(ev) {	
-		var configuration={
+		var configuration = {
 			svg : this.svg
 		};
 
@@ -54,15 +54,20 @@ export default Lang.Templatable("Config.DevsDiagram", class ConfigDevsDiagram ex
 	}
 	
 	Template() {
-		return "<div class='configuration'>" + 
-				   "<div handle='title' class='configuration-title'></div>" + 
-				   "<div class='configuration-line'>" + 
-					  "<div class='label'>nls(Widget_DevsDiagram)</div>" +
-					    "<div handle='svg' class='svg' widget='Widget.svg'></div>" +
-					 
-				   "</div>" +
-				  " <div handle='content'></div>"+
-				   "<button handle='continue' class='load'>nls(Configurator_Continue)</button>" + 
-			   "</div>";
+		return 	"<div class='configuration'>" + 
+					"<div handle='title' class='configuration-title'></div>" + 
+					"<div class='configuration-line'>" + 
+						"<div class='label'>nls(Widget_DevsDiagram)</div>" +
+						"<div class='box d-vertical d-center' id='maFile'>" +
+							"<div handle='message' class='dropzone-message'>" +
+								"<div class='dropzone-instructions'>nls(SVG_Instructions)</div>" +
+								"<br>" +
+								"<i handle='icon' class='fas fa-exclamation-triangle'></i>" +
+							"</div>" +
+							"<input handle='inputsvg' class='value' type='file' multiple/>" +
+						"</div>" + 
+					"</div>" +
+					"<button handle='continue' class='load'>nls(Configurator_Continue)</button>" + 
+				"</div>";
 	}
 });

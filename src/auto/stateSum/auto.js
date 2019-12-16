@@ -12,11 +12,12 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 	constructor(config, simulation) {
 		super(new StateChart(), simulation);
 		
-		this.temp = config.tracked;
-		
 		this.z = config.z;
-		this.tracked = this.GetTemporaryTracked(config.tracked, simulation.Palette);
-		this.yMax = simulation.StateMaxFrequency;
+		this.tracked = config.tracked;
+		
+		this.data = this.BaseData(config.tracked, simulation.palette);
+		
+		this.yMax = simulation.size[0] * simulation.size[1];
 		
 		var h1 = this.Widget.On("MouseMove", this.onMouseMove_Handler.bind(this));
 		var h2 = this.Widget.On("MouseOut", this.onMouseOut_Handler.bind(this));
@@ -31,14 +32,31 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 		this.Data();
 	}
 	
-	Destroy() {
-		super.Destroy();
+	BaseData(tracked, palette) {
+		return Array.Map(tracked, function(t) {
+			var d = {
+				min : t.min,
+				max : t.max,
+				value : t.value,
+				total : 0
+			}
+			
+			if (t.value != undefined && t.value != null) {
+				d.color = palette.GetColor(d.value);
+				d.label = t.value;
+			}
+			
+			else {
+				d.color = palette.GetColor((d.min + d.max) / 2);
+				d.label = "between " + t.min + " and " + t.max;
+			}
+			
+			return d;
+		})
 	}
 	
-	GetTemporaryTracked(stracked, palette) {		
-		return Array.Map(stracked.split(";"), function(s) { 			
-			return { label:s, value:+s, color:palette.GetColor(+s) }
-		});
+	Destroy() {
+		super.Destroy();
 	}
 	
 	BuildTooltip() {
@@ -67,22 +85,21 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 	
 	Data() {		
 		var state = this.Simulation.state;
-	
-		Array.ForEach(this.tracked, function(t) {
-			t.total = 0;
-			for(var id in state.model){
-				var value = state.model[id];
+		
+		Array.Map(this.data, function(d) {
+			d.total = 0;
+			
+			for(var id in state.models){
+				var value = state.models[id];
 												
-				if (t.value == value) t.total++;
+				if (d.value == value) d.total++;
 				
-				if (!t.range) continue;
-				
-				if (t.range.min < value && t.range.max >= value) t.total++;
+				else if (d.min < value && d.max >= value) d.total++;
 			}
 
 		}.bind(this));
 		
-		this.Widget.Data(this.tracked);
+		this.Widget.Data(this.data);
 	}
 	
 	// TODO: This can be made more efficient by applying only the transitions
@@ -91,8 +108,8 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 		this.Update();
 	}
 	
-	onSimulationPaletteChange_Handler(ev) {			
-		this.tracked = this.GetTemporaryTracked(this.temp, this.Simulation.Palette);
+	onSimulationPaletteChange_Handler(ev) {
+		this.data = this.BaseData(this.tracked, this.Simulation.palette);
 		
 		this.Data();
 		this.Draw(this.yMax);
@@ -111,6 +128,6 @@ export default Lang.Templatable("Auto.StateChart", class AutoStateChart extends 
 	}
 	
 	Save() {
-		return { name:"Auto.StateChart", config: { z:this.z, tracked:this.temp }}
+		return { name:"Auto.StateChart", config: { z:this.z, tracked:this.tracked }}
 	}
 });

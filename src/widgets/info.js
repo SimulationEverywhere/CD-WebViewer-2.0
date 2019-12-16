@@ -27,10 +27,6 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 						"<span class='info-value' handle='name'></span>" +
 					"</div>" +
 					"<div class='info-line'>" +
-						"<span class='info-label'>nls(Info_Label_Size)</span>" +
-						"<span class='info-value' handle='size'></span>" +
-					"</div>" + 
-					"<div class='info-line'>" +
 						"<span class='info-label'>nls(Info_Label_NumberFrames)</span>" +
 						"<span class='info-value' handle='nFrames'></span>" +
 					"</div>" + 
@@ -45,7 +41,6 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 		this.Node("simulator").innerHTML = "";
 		this.Node("name").innerHTML = "";
 		this.Node("files").innerHTML = "";
-		this.Node("size").innerHTML = "";
 		this.Node("nFrames").innerHTML = "";
 		this.Node("lastFrame").innerHTML = "";
 		
@@ -53,16 +48,15 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 		Dom.ToggleCss(this.Node("noFiles"), "hidden", false);
 	}
 	
-	Initialize(info) {
+	Initialize(simulation) {
 		Dom.ToggleCss(this.Node("noFiles"), "hidden", true);
 		Dom.ToggleCss(this.Node("content"), "hidden", false);
 		
-		this.UpdateLine("simulator", info.Simulator);
-		this.UpdateLine("files", info.FilesAsString());
-		this.UpdateLine("name", info.Name);
-		this.UpdateLine("size", info.SizeAsString());
-		this.UpdateLine("nFrames", info.NFrames);
-		this.UpdateLine("lastFrame", info.LastFrame);
+		this.UpdateLine("simulator", simulation.simulator);
+		this.UpdateLine("files", this.FilesAsString(simulation));
+		this.UpdateLine("name", simulation.name);
+		this.UpdateLine("nFrames", simulation.nFrames);
+		this.UpdateLine("lastFrame", simulation.lastFrame);
 	}
 	
 	UpdateLine(id, value) {
@@ -74,4 +68,10 @@ export default Lang.Templatable("Widget.Info", class Info extends Widget {
 			this.Node(id).innerHTML = value;
 		}
 	}
+	
+	FilesAsString(simulation) {		
+		return simulation.files.map(f => f.name).join(", ");
+	}
+	
+	
 });

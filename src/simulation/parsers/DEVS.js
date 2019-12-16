@@ -18,12 +18,16 @@ export default class DEVS extends Parser {
 		
 	IsValid() {		
 		var d = Lang.Defer();
-		var log = Array.Find(this.files, function(f) { return f.name.match(/.log/i); });
-		var ma = Array.Find(this.files, function(f) { return f.name.match(/.ma/i); });
+		var log = Array.Find(this.files, function(f) { return f.name.match(/\.log/i); });
+		var ma = Array.Find(this.files, function(f) { return f.name.match(/\.ma/i); });
 		
 		// TODO : This should reject
-		if (!log || !ma) d.Resolve(false);
+		if (!log || !ma) {
+			d.Resolve(false);
 
+			return d.promise;
+		}
+		
 		var reader = new ChunkReader();
 		
 		reader.ReadChunk(ma, 400).then((ev) => {
@@ -39,8 +43,8 @@ export default class DEVS extends Parser {
 		var d = Lang.Defer();
 		var simulation = new Simulation();
 		
-		var ma = Array.Find(files, function(f) { return f.name.match(/.ma/i); });
-		var log = Array.Find(files, function(f) { return f.name.match(/.log/i); });
+		var ma = Array.Find(files, function(f) { return f.name.match(/\.ma/i); });
+		var log = Array.Find(files, function(f) { return f.name.match(/\.log/i); });
 		
 		var p1 = Sim.ParseFile(ma, this.ParseMaFile.bind(this, simulation));
 		var p2 = Sim.ParseFileByChunk(log, this.ParseLogChunk.bind(this, simulation));
