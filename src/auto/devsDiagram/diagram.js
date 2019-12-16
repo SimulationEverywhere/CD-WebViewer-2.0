@@ -13,8 +13,12 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	
 	SetSVG(svg) {
 		this.Node('diagram').innerHTML = svg;
+		this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("width", "100%");
+		this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("height", "100%");
+		this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("viewbox", "0 0 560 340"); // as per the cell dimesions 			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("preserveAspectRatio", "none");
 
 		var models = this.Node('diagram').querySelectorAll("[model]");
+
 		
 		this.models = {};
 		
