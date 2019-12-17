@@ -1,32 +1,32 @@
 
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="300" viewBox="-0.5 -0.5 828 481" style="background-color:#dae3f7; border-radius:5px;">
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="300" viewBox="-0.5 -0.5 828 481" style="background-color:rgb(255, 255, 255); border-radius:5px;">
 <g>
-<rect model = "FirstCouple" x="87" y="0" width="740" height="480" fill="none" stroke="#000000"  type ="coupled"/>
+<rect id="FirstCouple"  model = "FirstCouple" x="87" y="0" width="740" height="480" fill="none" stroke="#000000"  type ="coupled"/>
 
 <g id ="sender" type="atomic">
-	<rect model = "sender" x="187" y="80" width="120" height="270" fill="none" stroke="#000000"  type ="model"/>
+	<rect id = "02" model = "sender" x="187" y="80" width="120" height="270" fill="none" stroke="#000000"  type ="model"/>
 	<g transform="translate(227.5,208.5)">
 	<text x="20" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Sender</text>
 	</g>
 </g>
 
 <g id ="receiver" type="atomic">
-	<rect model = "receiver" x="687" y="80" width="120" height="270" fill="none" stroke="#000000"  type ="model"/>	
+	<rect id = "06" model = "receiver" x="687" y="80" width="120" height="270" fill="none" stroke="#000000"  type ="model"/>	
 	<g transform="translate(725.5,208.5)">
 	<text x="21" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Receiver</text> </g>
 </g>
 
 <g id ="Network" type="coupled">
-<rect model = "network" x="387" y="120" width="230" height="210" fill="none" stroke="#000000" stroke-dasharray="3 3" type ="model"/>
+<rect id = "03" model = "network" x="387" y="120" width="230" height="210" fill="none" stroke="#000000" stroke-dasharray="3 3" type ="model"/>
 <g transform="translate(437.5,208.5)">
 <text x="40" y="100" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Netwrok</text> </g>
 	<g id ="subnet1" type="atomic">
-		<rect model = "subnet1" x="437" y="155" width="120" height="60" fill="none" stroke="#000000"  type ="model"/>
+		<rect id = "04" model = "subnet1" x="437" y="155" width="120" height="60" fill="none" stroke="#000000"  type ="model"/>
 		<g transform="translate(470.5,198.5)">
 		<text x="20" y="1" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Subnet 1</text> </g>
 	</g>
 	<g id ="subnet2" type="atomic">
-		<rect model = "subnet2" x="442" y="225" width="120" height="60" fill="none" stroke="#000000"  type ="model"/>
+		<rect id = "05" model = "subnet2" x="442" y="225" width="120" height="60" fill="none" stroke="#000000"  type ="model"/>
 		<g transform="translate(470.5,258.5)">		 
 		<text x="20" y="1" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Subnet 2</text> </g>
 	</g>
