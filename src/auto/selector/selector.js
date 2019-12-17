@@ -4,28 +4,23 @@ import Array from '../../utils/array.js';
 import Lang from '../../utils/lang.js';
 import Dom from '../../utils/dom.js';
 import Widget from '../../ui/widget.js';
+import Auto from '../auto.js';
 
 // TODO : should implement a placeable and saveable interface or something
 export default Lang.Templatable("Widget.Selector", class Selector extends Widget { 
 
-	constructor() {
-		super();
+	constructor(id) {
+		super(id);
 		
 		this.current = null;
 		
-		this.onLoadClick_Handler = this.onLoadClick_Handler.bind(this);
-		
-		this.Node("load").addEventListener("click", this.onLoadClick_Handler);
-	}
-	
-	LoadItems(items) {
-		this.items = Array.Map(items, function(w) {
-			var options = { className:"definition-line", innerHTML:Lang.Nls(w.nls) };
+		this.items = Array.Map(Auto.Widgets(), function(w) {
+			var options = { className:"definition-line", innerHTML:Auto.Label(w.id) };
 			
 			var item = {
 				node : Dom.Create("div", options, this.Node("select")),
-				definition : w.definition,
-				configurator : w.configurator
+				definition : Auto.Definition(w.id),
+				configurator : Auto.Configurator(w.id)
 			}
 			
 			item.node.addEventListener("click", this.onDefinitionClick_Handler.bind(this, item));
@@ -33,6 +28,9 @@ export default Lang.Templatable("Widget.Selector", class Selector extends Widget
 			return item;
 		}.bind(this)); 
 		
+		this.onLoadClick_Handler = this.onLoadClick_Handler.bind(this);
+		
+		this.Node("load").addEventListener("click", this.onLoadClick_Handler);
 	}
 	
 	Destroy() {

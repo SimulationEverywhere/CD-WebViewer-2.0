@@ -1,76 +1,56 @@
 'use strict';
 
 import Lang from './lang.js';
+import DEVS from '../simulation/parsers/DEVS_parser.js';
 import CDpp from '../simulation/parsers/CDpp.js';
 import RISE from '../simulation/parsers/RISE.js';
-import DEVS from '../simulation/parsers/DEVS.js';
 import ChunkReader from '../components/chunkReader.js';
 
-const PARSERS = [CDpp, RISE, DEVS];
+const PARSERS = [DEVS, CDpp, RISE];
 
 export default class Sim {
 	
-	static DetectParser(files) {		
+	static DetectParser(fileList) {
 		var d = Lang.Defer();
-		var parsers = PARSERS.map(p => new p(files));
-		var defs = parsers.map(p => p.IsValid());
 		
-		Promise.all(defs).then(function(results) {
-			var valids = results.filter(r => r.result);
-			
-			if (valids.length > 1) d.Reject(new Error("Files match multiple parsers."));
-			
-			if (valids.length == 0) d.Reject(new Error("Could not detect the simulator used to generate the files."));
-			
-			var idx = results.findIndex(r => r.result);
-			
-			d.Resolve(parsers[idx]);
-		})
+		DetectParserI(fileList, 0, d);
 		
 		return d.promise;
-	}
-	
-	static ParseFile(file, parser) {
-		var d = Lang.Defer();
-		var r = new ChunkReader();
 		
-		if (!file) d.Resolve(null);
-		
-		else r.Read(file).then(function(ev) {
-			var content = parser(ev.result);
+		function DetectParserI(fileList, i, d) {
+			if (i == PARSERS.length) {
+				d.Reject(new Error("Could not detect the simulator used to generate the files"));
+				
+				return;
+			}
 			
-			d.Resolve(content);
-		});
-
-		return d.promise;
+			var parser = new PARSERS[i]();
+			
+			var p = parser.Initialize(fileList);
+			
+			var success = (d, ev) => { d.Resolve({ parser:ev.result }); };
+			
+			var failure = (fileList, i, d, error) => { DetectParserI(fileList, ++i, d); }
+			
+			p.then(success.bind(this, d), failure.bind(this, fileList, i, d));
+		}
 	}
 	
-	static ParseFileByChunk(file, parser) {
+	static ReadFile(file, parseFn) {
 		var d = Lang.Defer();
 		var reader = new ChunkReader();
 		
 		if (!file) d.Resolve(null);
 		
-		ParseFileChunk();
-		
-		return d.promise;
-		
-		function ParseFileChunk() {
-			reader.ReadChunk(file).then((ev) => {
-				var idx = ev.result.lastIndexOf('\n');
-				var content = ev.result.substr(0, idx);
+		else {
+			reader.Read(file.raw).then((ev) => { 
+				file.content = parseFn(ev.result); 
 				
-				reader.MoveCursor(content.length + 1);
-				
-				parser(content, 100 * reader.position / file.size);
-				
-				if (reader.position < file.size) ParseFileChunk();
-				
-				else if (reader.position == file.size) d.Resolve(content);
-				
-				else throw new Error("Reader position exceeded the file size.");
+				d.Resolve(file.content);
 			});
 		}
+		
+		return d.promise;
 	}
 	
 	static RgbToHex(rgb) {
@@ -81,32 +61,5 @@ export default class Sim {
 		var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		
 		return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
-	}
-	
-	static ReadZipRISE(content, idx) {
-		var d = Lang.Defer();
-		var blobZip = new Blob([content], { type : "application/zip" });
-		
-		zip.createReader(new zip.BlobReader(blobZip), function(reader) {
-			reader.getEntries(function(entries) {
-				entries[idx].getData(new zip.TextWriter(), function(text){
-					var blobTxt = new Blob([text], { type: "text/plain" });
-
-					var file = new File([blobTxt], entries[idx].filename);
-
-					// reader.close(function(){  });
-					reader.close();
-					
-					d.Resolve(file);
-			   }/*,
-			   function(current,total){
-				   //progress callback
-			   }*/);
-		   });
-		}, function(error){
-			d.Reject(error);
-		});
-		
-		return d.promise;
 	}
 }

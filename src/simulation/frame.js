@@ -15,12 +15,12 @@ export default class Frame {
 		return this.transitions.length;
 	}
 	
-	AddTransition(transition) {
-		this.transitions.push(transition);
+	AddTransition(id, value, diff) {
+		var t = new Transition(id, value, diff);
 		
-		this.index[transition.id] = transition;
+		this.index[t.id] = t;
 		
-		return transition;
+		this.transitions.push(t);
 	}
 	
 	TransitionById(id) {
@@ -42,8 +42,8 @@ export default class Frame {
 	Reverse () {
 		var reverse = new Frame(this.time)
 		
-		Array.ForEach(this.transitions, function(t) {			
-			reverse.AddTransition(t.Reverse());
+		Array.ForEach(this.transitions, function(t) {
+			reverse.AddTransition(t.id, t.value - t.diff, t.diff);
 		})
 		
 		return reverse;

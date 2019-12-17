@@ -10,7 +10,6 @@ import Automated from '../automated.js';
 export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart extends Automated { 
 	
 	constructor(config, simulation) {
-	
 		super(new CellTrackChart(), simulation);
 		
 		this.selected = [];
@@ -20,7 +19,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		var h2 = this.Widget.On("MouseOut", this.onMouseOut_Handler.bind(this));
 		var h3 = this.Simulation.On("Move", this.onSimulationMove_Handler.bind(this));
 		var h4 = this.Simulation.On("Jump", this.onSimulationMove_Handler.bind(this));
-		var h5 = this.Simulation.On("Selected", this.onSelected_Handler.bind(this));
+		var h5 = this.Simulation.Selection.On("Change", this.onSelectionChange_Handler.bind(this));
 		
 		this.Handle([h1, h2, h3, h4, h5]);
 		
@@ -86,7 +85,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		Array.ForEach(this.Simulation.frames, function(f, i) {
 			Array.ForEach(this.selected, function(id, j) {
 				var t = f.TransitionById(id);
-				var v = (t) ? t.Value : data.series[j].values[i - 1] || 0;
+				var v = (t) ? t.Value : data.series[j].values[i - 1];
 				
 				data.series[j].values.push(v)
 				
@@ -121,7 +120,7 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 		this.tooltip.Hide();
 	}
 	
-	onSelected_Handler(ev) {
+	onSelectionChange_Handler(ev) {
 		this.UpdateSelected();
 		this.BuildTooltip();
 		this.Data();
@@ -129,7 +128,9 @@ export default Lang.Templatable("Auto.CellTrackChart", class AutoCellTrackChart 
 	}
 	
 	UpdateSelected() {
-		this.selected = this.Simulation.Selected;
+		this.selected = Array.Map(this.Simulation.Selection.Selected, function(s) {
+			return s;
+		});
 	}
 	
 	Save() {

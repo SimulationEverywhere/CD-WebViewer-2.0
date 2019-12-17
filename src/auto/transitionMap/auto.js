@@ -8,8 +8,7 @@ import Grid from '../gridLayer/grid.js';
 import Automated from '../automated.js';
 import State from '../../simulation/state.js';
 import Frame from '../../simulation/frame.js';
-import TransitionCA from '../../simulation/transitionCA.js';
-import Palette from '../../simulation/palettes/gradient.js';
+import Palette from '../../simulation/palettes/d3.js';
 
 export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap extends Automated { 
 
@@ -30,10 +29,11 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		
 		this.BuildTooltip();
 		
-		this.palette = new Palette();
+		this.palette = new Palette("internal");
 		this.state = this.GetState(simulation, simulation.state.i);
-		
+		var state_clone = JSON.parse(JSON.stringify(this.state));
 		var max = this.GetMaxTransitions(simulation);
+		this.state = state_clone;
 		
 		var classes = this.palette.Buckets(this.n, this.min, this.max, 0, max);
 		
@@ -43,25 +43,28 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	GetState(simulation, i) {
 		var state = State.Zero(simulation.models);
 		
-		for (var j = 0; j <= i; j++) {
+		for (var j = 0; j < i; j++) {
 			Array.ForEach(simulation.frames[j].transitions, function(t) {
-				state.models[t.id]++;				
+				state.model[t.id]++;				
 			});
 		}
-		
+				
 		return state;
 	}
 	
 	GetMaxTransitions(simulation) {
 		var state = this.GetState(simulation, simulation.frames.length - 1);
+		
 		var max = 0;
 		
-		for(var id in state.models){
-			var v = state.models[id];
+		for(var id in state.model){
+			var idx = id.split("-");
+			var idt = idx[0] + "-" + idx[1] + "-" + this.z;
+			var v = state.model[idt];
 				
 			if (v > max) max = v;
+
 		}
-		
 		return max;
 	}
 	
@@ -81,16 +84,11 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 	}
 	
 	Resize() {
-		var size = this.Simulation.size;
-		
-		size = Array.Map(size, function(s) { return (+s); });
-		size = { x:size[0], y:size[1], z:size[2] };
-		
-		this.Widget.Resize(size);
+		this.Widget.Resize(this.Simulation.Size);
 	}
 	
 	Draw() {		
-		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation);
+		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation.selection);
 	}
 
 	onSimulationMove_Handler(ev) {
@@ -98,25 +96,26 @@ export default Lang.Templatable("Auto.TransitionMap", class AutoTransitionMap ex
 		var frame = new Frame("internal", "0");
 	
 		Array.ForEach(ev.frame.transitions, function(t) {			
-			this.state.models[t.id] += plus;
-			
-			var t = new TransitionCA(t.coord, this.state.models[t.id], null);
-			
-			frame.AddTransition(t);
+
+			this.state.model[t.id] +=plus;
+
+			frame.AddTransition(t.id, this.state.model[t.id], null);
+		
 		}.bind(this));
 		
-		this.Widget.DrawChanges(frame, this.z, this.palette, this.Simulation);
+		this.Widget.DrawChanges(frame, this.z, this.palette, this.Simulation.selection);
 	}
 	
 	onSimulationJump_Handler(ev) {		
 		this.state = this.GetState(this.Simulation, ev.state.i);
 		
-		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation);
+		this.Widget.Draw(this.state, this.z, this.palette, this.Simulation.selection);
 	}
 	
 	onMouseMove_Handler(ev) {
+		//var state = this.state.GetValue(ev.data.x, ev.data.y, this.z);
 		var id = ev.data.x + "-" + ev.data.y + "-" + this.z;
-		var state = this.state.models[id];
+		var state = this.state.model[id];
 
 		var subs = [ev.data.x, ev.data.y, this.z, state];
 		

@@ -33,22 +33,13 @@ export default class Popup extends Templated {
 		this.Node("root").style.visibility = "hidden";
 	}
 	
-	Enable() {
-		Dom.AddCss(this.Node("disabled"), "hidden");
-		
-	}
-	
-	Disable() {
-		Dom.RemoveCss(this.Node("disabled"), "hidden");
-	}
-	
 	onBtnClose_Click(ev) {
 		this.Hide();
 	}
 	
 	Template() {
 		return "<div handle='root' class='popup'>" +
-				  "<div handle='container' class='popup-container'>" +
+				  "<div class='popup-container'>" +
 					  "<div class='popup-header'>" +
 						  "<div class='popup-title' handle='title'></div>" +
 						  "<button class='close' handle='close'>×</button>" +
@@ -56,7 +47,6 @@ export default class Popup extends Templated {
 					
 					  "<div class='popup-body' handle='body'></div>" +
 				  "</div>" +
-				  "<div handle='disabled' class='popup-container popup-disabled hidden'></div>" +
 			  "</div>";
 	}
 }

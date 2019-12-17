@@ -8,9 +8,9 @@ import Parser from "./parser.js";
 import Palette from '../palette.js';
 import ChunkReader from '../../components/chunkReader.js';
 
-export default class RISE extends Parser { 
+export default class DEVS extends Parser { 
 	
-	get Type() { return "RISE"; }
+	get Type() { return "DEVS"; }
 	
 	get ModelName() { 
 		var i = this.files.log.raw.name.lastIndexOf(".");
@@ -27,23 +27,27 @@ export default class RISE extends Parser {
 	
 	GetFiles (fileList) {		
 		return {
-			log : Array.Find(fileList, function(f) { return f.name.match(".log"); })
+			log : Array.Find(fileList, function(f) { return f.name.match(".log"); }),
+			ma : Array.Find(fileList, function(f) { return f.name.match(".ma"); }),
+			//pal : Array.Find(fileList, function(f) { return f.name.match(".pal"); }),
+			//val : Array.Find(fileList, function(f) { return f.name.match(".val"); })
 		}
 	}
 	
 	IsValid() {		
 		var d = Lang.Defer();
-		
-		if (!this.files.log) d.Reject(new Error(`CD++ Parser is not valid for the selected files.` ));
-			
+
+		if (!this.files.log) d.Reject(new Error(`DEVS Parser is not valid for the selected files.` ));
+
 		var reader = new ChunkReader();
 		
-		reader.ReadChunk(this.files.log.raw, 200).then((ev) => {
-			var isValid = ev.result.indexOf("0 / L / ") >= 0;
+		reader.ReadChunk(this.files.log.raw, 400).then((ev) => {
+
+			var isValid = ev.result.indexOf(",") >= 0;
 			
-			if (isValid) d.Resolve(this);
+			if (!isValid) d.Resolve(this);
 			
-			d.Reject(new Error(`Rise Parser is not valid for the selected files.`));
+			d.Reject(new Error(`DEVS Parser is not valid for the selected files.`));
 		});
 		
 		return d.promise;
@@ -100,7 +104,7 @@ export default class RISE extends Parser {
 		
 	ParseSafeChunk(chunk) {
 		var lines = [];
-		var start = chunk.indexOf('0 / L / Y', 0);
+		var start = chunk.indexOf('Mensaje Y', 0);
 							
 		while (start > -1 && start < chunk.length) {			
 			var end = chunk.indexOf('\n', start);
@@ -111,29 +115,25 @@ export default class RISE extends Parser {
 			
 			lines.push(chunk.substr(start, length));
 
-			var start = chunk.indexOf('0 / L / Y', start + length);
+			var start = chunk.indexOf('Mensaje Y', start + length);
 		}
 		
 		Array.ForEach(lines, function(line) {
 			var split = line.split("/");
-			
-			// Parse coordinates
-			var i = split[4].indexOf('(');
-			var j = split[4].indexOf(')');
-			var c = split[4].substring(i + 1, j).split(',');
+			// Parse models
+			var i = split[2].indexOf('(');
+			var j = split[2].indexOf(')');
+			var c = split[2].substring(i + 1, j).split(',');
 			
 			// TODO : Does this ever happen?
-			if (c.length < 2) return;
+			if (c.length > 1) return;
 
-			var model = parseInt(c[1],10) + "-" + parseInt(c[0],10) + "-" + parseInt(c.length==3 ? c[2] : 0, 10);
-			
+			var model = c[0] ;
 			// Parse state value
-			var v = parseFloat(split[6]);
+			var v = parseFloat(split[4]);
 			
 			// Parse Timestamp
-			var idx = split[3].trim();
-			
-			var time = Array.Map(idx.split(":"), function(t) { return +t; });
+			var idx = split[1].trim();
 
 			var frame = this.index[idx];
 			
@@ -148,6 +148,5 @@ export default class RISE extends Parser {
 			this.models[model]=model;
 
 		}.bind(this));
-
 	}
 }
