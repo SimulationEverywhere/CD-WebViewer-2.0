@@ -28,8 +28,8 @@ export default Lang.Templatable("Widget.ModelInput", class ModelInput extends Wi
         // Dom.ToggleCss(this.Node("list"),"enabled",true);
         this.popup.Show();
         this.Node("modelInput").On("dataReady", function(ev){
-                console.log(ev.result);
-            })
+            console.log(ev.result);
+        })
 
     }
 

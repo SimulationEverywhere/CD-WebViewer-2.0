@@ -39,12 +39,6 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.Node("palette").addEventListener("click", this.onPaletteClick_Handler.bind(this));
 		this.Node("dropzone").On("Change", this.onDropzoneChange_Handler.bind(this));
 		this.Node("riseModel").addEventListener("click", this.onModelInputClick_Handler.bind(this));
-
-
-		// this.Node("modelList").On("dataReady", function(ev) {
-		// 	console.log(ev.data);
-		// 	this.parser.Parse().then((ev) => { this.LoadSimulation(ev.data); });
-		// });
 		
 		this.popup = new Popup();
 		
@@ -52,7 +46,6 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 
 		this.popupRise = new Popup();
 		this.popupRise.Widget = new ModelList();
-		
 		this.popupRise.Widget.On("dataReady", this.onModelListClick_Handler.bind(this));
 		
 		this.popup.Node("title").innerHTML = Lang.Nls("Control_PaletteEditor");
@@ -171,13 +164,6 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	}
 
 	onModelListClick_Handler(ev){
-		var fileList = ev.files;
-
-		// var modelArray = this.Array.from(ev.data);
-		// var listArray = ev.data.split(/\n|\r/g);
-		//var blobObject = new Blob([ev.results],{type: ev.results.type});
-		//var fileModel = new File([ev.results], ev.results.name,{type: ev.results.type, lastModified: ev.results.lastModifiedDate});
-		// this.LoadSimulation([blobObject]);
 
 		var success = this.onParserDetected_Handler.bind(this);
 		var failure = this.onError_Handler.bind(this);
@@ -185,17 +171,7 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		this.popupRise.Hide();
 
 		Sim.DetectParser(ev.result).then(success, failure);
-		
-
-		// this.LoadSimulation(ev.results);
-
-		// this.Node("load").disabled = true;
-		
-		// Dom.ToggleCss(this.Node("load"), "loading", true);
-		
-		// this.Node("playback").Stop();
-		
-		// this.parser.Parse().then((ev) => { this.LoadSimulation(ev.result); });
+	
 	}
 
 	Template() {
@@ -212,7 +188,6 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 						 '<div>' + 
 						    "<img handle='palette' class='palette disabled' src='assets/swatch.png' title='nls(Control_PaletteEditor)' alt='nls(Control_PaletteEditor)'>" +
 						    "<img handle='riseModel' class='rise' src='assets/cloud.png' title='nls(RISE_Server_Instructions)' alt='nls(RISE_Server_Instructions)'>" +
-						//   "<div handle='modelList' class='info info-label' widget='Widget.ModelList'></div>" +
 					     "</div>" +
 						"</div>" +
 					  
