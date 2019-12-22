@@ -23,7 +23,7 @@ export default class DEVS extends Parser {
 		var svg = Array.Find(this.files, function(f) { return f.name.match(/.svg/i); });
 		
 		// TODO : This should reject
-		if (!log || !ma ) d.Resolve(false);
+		if (!log || !ma || !svg) d.Resolve(false);
 		
    		var reader = new ChunkReader();
 		//if(log && ma)

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1008px" height="301px" viewBox="-0.5 -0.5 1008 301" style="background-color: rgb(255, 255, 255);">
+
+<g>
+<rect x="60" y="0" width="860" height="300" fill="#ffffff" stroke="#000000" pointer-events="all"/>
+<rect model = "webapp" x="120" y="60" width="350" height="150" fill="#ffffff" stroke="#000000" stroke-dasharray="3 3" pointer-events="all"/>
+<rect model = "university" x="540" y="60" width="310" height="150" fill="#ffffff" stroke="#000000" stroke-dasharray="3 3" pointer-events="all"/>
+<rect model = "application"  x="160" y="110" width="100" height="60" fill="#ffffff" stroke="#000000" pointer-events="all"/>
+<rect model = "applicationprocess"  x="320" y="110" width="100" height="60" fill="#ffffff" stroke="#000000" pointer-events="all"/>
+<rect model = "faculty"  x="720" y="110" width="100" height="60" fill="#ffffff" stroke="#000000" pointer-events="all"/>
+<rect model = "registrar"  x="570" y="110" width="100" height="60" fill="#ffffff" stroke="#000000" pointer-events="all"/>
+
+<path model = "webappout" d="M 470 140 L 510 140 L 533.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "studentapplicationin" d="M 538.88 140 L 531.88 143.5 L 533.63 140 L 531.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "applicationout" d="M 260 140 L 313.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "applicationprocessin" d="M 318.88 140 L 311.88 143.5 L 313.63 140 L 311.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "applicationprocessout" d="M 420 140 L 463.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path  d="M 468.88 140 L 461.88 143.5 L 463.63 140 L 461.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+<path model = "applicationprocessstatus" d="M 370 110 L 370 90 L 210 90 L 210 103.63" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "applicationfillingcomplete" d="M 210 108.88 L 206.5 101.88 L 210 103.63 L 213.5 101.88 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "facultyout" d="M 820 140 L 840 140 L 830 140 L 843.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "" d="M 848.88 140 L 841.88 143.5 L 843.63 140 L 841.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "applicationverificationout" d="M 670 140 L 713.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "applicationcoursecheck" d="M 718.88 140 L 711.88 143.5 L 713.63 140 L 711.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+<path model = "minstandardsnotmet" d="M 620 110 L 620 90 L 843.63 90" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "rejectedapplicationid" d="M 848.88 90 L 841.88 93.5 L 843.63 90 L 841.88 86.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "facultyrejectedid" d="M 850 140 L 900 140 L 913.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path d="M 918.88 140 L 911.88 143.5 L 913.63 140 L 911.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "studentsregistering" d="M 60 135 L 60 140 L 100 140 L 113.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "webappin" d="M 118.88 140 L 111.88 143.5 L 113.63 140 L 111.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "applicationin" d="M 120 140 L 153.63 139.16" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path d="M 158.88 139.03 L 151.97 142.7 L 153.63 139.16 L 151.8 135.7 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "standardsnotmet" d="M 850 90 L 913.63 90" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path model = "registrar" d="M 918.88 90 L 911.88 93.5 L 913.63 90 L 911.88 86.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<path model = "applicationverificationin" d="M 520 140 L 563.63 140" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"/>
+<path  d="M 568.88 140 L 561.88 143.5 L 563.63 140 L 561.88 136.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+
+<g transform="translate(1.5,116.5)">
+<text x="53" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">studentsRegistering</text>
+</g>
+<g transform="translate(81.5,153.5)">
+<text x="28" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">WebAppIn</text>
+</g>
+<g transform="translate(124.5,123.5)">
+<text x="35" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">applicationIN</text>
+</g>
+<g transform="translate(180.5,133.5)">
+<text x="30" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Application</text>
+</g>
+<g transform="translate(318.5,133.5)"> 
+<text x="51" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">ApplicationProcess</text> 
+</g>
+<g transform="translate(585.5,133.5)">  
+<text x="25" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Registrar</text> 
+</g>
+<g transform="translate(750.5,133.5)">
+<text x="20" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">Faculty</text> 
+</g>
+<g transform="translate(228.5,123.5)">  
+<text x="42" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">applicationOUT</text> 
+</g>
+<g transform="translate(253.5,153.5)"> 
+<text x="57" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">applicationProcessIN</text> 
+</g>
+<g transform="translate(366.5,113.5)">
+<text x="63" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">applicationProcessOUT</text> 
+</g>
+<g transform="translate(332.5,73.5)">
+<text x="68" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">applicationProcessStatus</text> 
+</g>
+<g transform="translate(140.5,73.5)"> 
+<text x="69" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">applicationFilingComplete</text>
+</g>
+<g transform="translate(464.5,153.5)"> 
+<text x="25" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">WebOUT</text> 
+</g>
+<g transform="translate(503.5,123.5)"> 
+<text x="36" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">StudentappIn</text> 
+</g>
+
+<g transform="translate(544.5,173.5)"> 
+<text x="46" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">appVerificationIN</text> 
+</g>
+
+<g transform="translate(553.5,73.5)"> 
+<text x="57" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">minStandardsNotMet</text> 
+</g>
+
+<g transform="translate(779.5,73.5)"> 
+<text x="41" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">RejectedAppID</text> 
+</g>
+
+<g transform="translate(912.5,73.5)">
+<text x="47" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">StandardsNotMet</text>
+ </g>
+ 
+ <g transform="translate(916.5,123.5)">
+ <text x="43" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">FacultyRejected</text>
+ </g>
+ 
+ <g transform="translate(801.5,123.5)"> 
+ <text x="38" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">facultyOpinion</text> 
+ </g>
+ 
+ <g transform="translate(637.5,113.5)">
+ <text x="52" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">appVerificationOUT</text> 
+ </g>
+ 
+ <g transform="translate(683.5,153.5)">
+ <text x="37" y="12" fill="#000000" text-anchor="middle" font-size="12px" font-family="Helvetica">CourseCheck</text> 
+ </g>
+ </g>
+ </svg>

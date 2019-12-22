@@ -80,9 +80,6 @@ var nls = {
 	"Playback_Play" : {
 		"en" : "Play forward"
 	},
-	"Tooltip_control" : {
-		"en" : "How Control Works"
-	},
 	"Playback_StepForward" : {
 		"en" : "Step forward"
 	},
@@ -236,35 +233,45 @@ var nls = {
 	"Main_Unsupported_Browser" : {
 		"en" : "This application is for the Chrome browser. It requires many features that are not supported by other browsers."
 	},
+	"Tooltip_control" : {
+		"en" : "Drop your files in the Drop-Zone, you can either drag and drop files or Click to browse. "
+			+	"To Load Cell DEVS Simulation- you need to drop .log file and a .ma files."
+			+  "To Load DEVS simulation- Drop .log , .ma and .svg files ."
+			+  "You can see the information about the files you just uploaded in the Information Tab."
+			+  "Configure the visualization through Settings. You can change colors of visualization from the color Pallete on the right side."
+			+  "Load the simulation by clicking on Load Simulation  Button. "
+			+	"You can animate the visualization by the PlayBack Widget. Play, Pause, Skip to the frame you want to visualize."
+			+  "Record the Video of simulation by clicking the record button."
+	},
 	"Addiction Model" : {
-	"en" : "This is the desciption of Addiction-model"	
+	"en" : "A Cell-DEVS  model to simulate the criminal activities in the area and the hard drug (for example, cocaine and heroin) consumption based on the fact that the addiction to the criminal activities leads to increased criminal activities in an area."	
 	},
 	"CO2 Model" : {
-	"en" : "This is the desciption of CO2-model"	
+	"en" : "This is the desciption of Cell-DEVS CO2-model"	
 	},
 	"Fire Model" : {
-	"en" : "This is the desciption of Fire-model"	
+	"en" : "The simulation allows to foresee the propagation and intensity of the fire in a forest."	
 	},
 	"Fire And Rain Model" : {
-	"en" : "This is the desciption of Fire and Rain-model"	
+	"en" : "A Cell-DEVS  model to simulate a rainstorm  in a burning forest. It moves to SE, extinguishing the fire on burning cells."	
 	},
 	"Life Model" : {
-	"en" : "This is the desciption of Life-model"	
+	"en" : "A Cell-DEVS model to simulate the life game with Conway rules."	
 	},
 	"Logistic Urban Growth Model" : {
-	"en" : "This is the desciption of Logistic Urban Growth Model"	
+	"en" : "A Cell-DEVS  model to study Urban growth with increasing population, since population moves into the cell where geology suitability is fine and expands with time, almost the majority of land will be turned into urban with the population increase."	
 	},
 	"Swarm Model" : {
-	"en" : "This is the desciption of Swarm Model"	
+	"en" : "A Cell-DEVS  model to detect pattern in Swarm genration and to show pattern swarm undergo their life."	
 	},
 	"Tumor Model" : {
-	"en" : "This is the desciption of Tumor-model"	
+	"en" : "A Cell-DEVS  model to simulate the tumor growth, and expanded those models to include the response of the immune system."	
 	},
 	"UAV Model" : {
-	"en" : "This is the desciption of UAV-model"	
+	"en" : "A Cell-DEVS  model to simulate the Unmanned Aerial Vehicles (UAV) target search task, specifically the concept of using target location probability gradient fields to the UAV target search task, specifically the concept of using target location probability gradient fields."	
 	},
 	"Worm Model" : {
-	"en" : "This is the desciption of Worm-model"	
+	"en" : "A Cell-DEVS  model to simulate a typical process of spread of worm, in a LAN(Local Area Network)."	
 	}
 }
 
