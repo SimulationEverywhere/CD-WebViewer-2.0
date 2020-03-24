@@ -77,4 +77,29 @@ export default class Net {
 		link.click();
 		link = null;
 	}
+
+	static FetchSVG(url) {
+	
+		var p= fetch(url)
+	 			.then(results => {
+	  				 return results.json();
+	  				})
+	  			.then(data => {
+	  				return (data.files["SVGfile.svg"].content );
+	   			
+	  			});
+	  			return p;
+	}
+
+	static FetchLog(url) {
+		var p= fetch(url)
+	 			.then(results => {
+	  				 return results.json();
+	  				})
+	  			.then(data => {
+	  				return (data.files["CSVfile.csv"].content );
+	   			
+	  			});
+	  			return p;
+	}
 }

@@ -63,6 +63,8 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 	}
 	
 	LoadSimulation(simulation) {
+		
+
 		this.simulation = simulation;
 		
 		this.simulation.On("Error", this.onError_Handler.bind(this));
@@ -128,13 +130,14 @@ export default Lang.Templatable("Widget.Control", class Control extends Widget {
 		var failure = this.onError_Handler.bind(this);
 		
 		Sim.DetectParser(ev.files).then(success, failure);
-		//console.log(ev.files);
+		
 	}
 	
 	onParserDetected_Handler(ev) {
 		this.parser = ev.result;
-		
-		var json = Array.Find(this.files, function(f) { return f.name.match(/.json/i); });
+		var json = null;
+		if(this.parser.constructor.name !== "JSON")
+		json = Array.Find(this.files, function(f) { return f.name.match(/.json/i); });
 		
 		var success = this.onConfigParsed_Handler.bind(this);
 		var failure = this.onError_Handler.bind(this);

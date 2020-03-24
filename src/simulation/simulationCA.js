@@ -1,7 +1,7 @@
 'use strict';
 
 import Simulation from './simulation.js';
-import TransitionCA from './TransitionCA.js';
+import TransitionCA from './transitionCA.js';
 
 export default class SimulationCA extends Simulation { 
 	

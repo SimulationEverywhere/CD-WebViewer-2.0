@@ -175,7 +175,7 @@ export default class CDpp extends Parser {
 				f.AddTransition(new TransitionCA([x, y, z], v));
 			}
 		}
-		
+	
 		return f;
 	}
 	

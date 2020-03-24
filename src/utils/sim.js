@@ -4,9 +4,10 @@ import Lang from './lang.js';
 import CDpp from '../simulation/parsers/CDpp.js';
 import RISE from '../simulation/parsers/RISE.js';
 import DEVS from '../simulation/parsers/DEVS.js';
+import JSON from '../simulation/parsers/JSON.js';
 import ChunkReader from '../components/chunkReader.js';
 
-const PARSERS = [CDpp, RISE, DEVS];
+const PARSERS = [CDpp, RISE, DEVS, JSON];
 
 export default class Sim {
 	

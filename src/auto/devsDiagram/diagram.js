@@ -12,32 +12,39 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 	}
 	
 	SetSVG(svg) {
-		this.Node('diagram').innerHTML = svg;
-		this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("width", "100%");
-			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("height", "100%");
-			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("viewbox", "0 0 560 340"); // as per the cell dimesions 
-			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("preserveAspectRatio", "none");
-			this.Node("diagram").getElementsByTagName("title").hidden = true;
+if (svg != null)
+		{
+			this.Node('diagram').innerHTML = svg;
+			this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("width", "100%");
+				this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("height", "100%");
+				this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("viewbox", "0 0 560 340"); // as per the cell dimesions 
+				this.Node("diagram").getElementsByTagName("svg")[0].setAttribute("preserveAspectRatio", "none");
+				this.Node("diagram").getElementsByTagName("title").hidden = true;
+				
+			var models = this.Node('diagram').querySelectorAll("[model]");
 			
-		var models = this.Node('diagram').querySelectorAll("[model]");
-		
-		this.models = {};
-		
-		Array.ForEach(models, function(model) {
-			var id = model.getAttribute("model");
+			this.models = {};
 			
-			model.addEventListener("mousemove", this.onSvgMouseMove_Handler.bind(this));
-			model.addEventListener("click", this.onSvgClick_Handler.bind(this));
-			model.addEventListener("mouseout", this.onSvgMouseOut_Handler.bind(this));
-			
-			this.models[id] = {
-				svg : model,
-				fill : model.getAttribute("fill"),
-				stroke : model.getAttribute("stroke"),
-				width : model.getAttribute("stroke-width")
-			}
-		}.bind(this));
+			Array.ForEach(models, function(model) {
+				var id = model.getAttribute("model");
+				
+				model.addEventListener("mousemove", this.onSvgMouseMove_Handler.bind(this));
+				model.addEventListener("click", this.onSvgClick_Handler.bind(this));
+				model.addEventListener("mouseout", this.onSvgMouseOut_Handler.bind(this));
+				
+				this.models[id] = {
+					svg : model,
+					fill : model.getAttribute("fill"),
+					stroke : model.getAttribute("stroke"),
+					width : model.getAttribute("stroke-width")
+				}
+			}.bind(this));
 	}
+else
+{
+this.Node('diagram').innerHTML = 'No SVG Found';	
+		}
+}
 	
 	onSvgMouseMove_Handler(ev) {
 		var model = ev.target.getAttribute('model');
@@ -55,11 +62,22 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 		this.Emit("Click", { x:ev.pageX, y:ev.pageY , model:this.models[model] ,modelid:model});
 	}
 		
-	DrawModel(model, fill, stroke, width) {
-
-		if (fill) model.svg.setAttribute('fill', fill);
-		if (stroke) model.svg.setAttribute('stroke', stroke);
-		if (width) model.svg.setAttribute('stroke-width', width);
+	DrawModel(model, input, output, fill, stroke, width) {
+		if (model != null)
+		{		if (fill) model.svg.setAttribute('fill', fill);
+				if (stroke) model.svg.setAttribute('stroke', stroke);
+				if (width) model.svg.setAttribute('stroke-width', width);
+		}
+		if (input != null)
+		{	
+			if (stroke) input.svg.setAttribute('stroke', stroke);
+			if (width) input.svg.setAttribute('stroke-width', width);
+		}
+		if (output != null)
+		{	
+			if (stroke) output.svg.setAttribute('stroke', stroke);
+			if (width) output.svg.setAttribute('stroke-width', width);
+		}
 	}
 	
 	ResetModel(model) {
@@ -99,15 +117,18 @@ export default Lang.Templatable("Diagram.DevsDiagram", class DevsDiagram extends
 		
 		//TO DRAW INITIAL STATE AFTER SHOWING THE CHANGES.
 		var transitions = this.data.transitions[state.i];
-		
+	
 		Array.ForEach(transitions, function(t) {
 			var m = this.models[t.id];
+			var i = this.models[t.input];
+			var o = this.models[t.output];
 			
-	
-			if (!m) return;
-		
+			if (t.phase == 'inactive' ) m = null;
+			
 			// TODO : style should come from auto wrapper.
-			this.DrawModel(m, 'LightSeaGreen', null, 4.0);
+			
+			this.DrawModel(m, i, o, 'LightSeaGreen', null, 4.0);
+
 		}.bind(this));
 	
 	}
